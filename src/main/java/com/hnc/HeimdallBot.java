@@ -17,7 +17,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 public class HeimdallBot extends TelegramLongPollingBot {
 	
 	private static String botUsername = "heimdall_hnc_bot";
-	private static String botToken = ">>>>>>>TOKEN<<<<<<<<<";
+	private static String botToken = "191864153:AAHjSASAEyGcInw6EeF5PvL2-WDhDRa5n5g";
 	private static final Integer CACHETIME = 86400;
 
 	public static void main( String[] args ) {
@@ -55,11 +55,11 @@ public class HeimdallBot extends TelegramLongPollingBot {
 			List<String> results = new ArrayList<String>();
 			if( !query.isEmpty() ) {
 				query = query.replaceAll( "\\_", "\\\\_" );
-				results.add( "Bem vindo, " + query + "\nSinto muito em avisar que sua vis„o do HnC certamente vai mudar" );
+				results.add( "Bem vindo, " + query + "\nSinto muito em avisar que sua vis√£o do HnC certamente vai mudar" );
 			}
 
-			results.add( "Fazer uma pauta: complicado, mas, se vocÍ domina ou gosta do assunto, vai tranquilo.\n\nGravar: È uma loucura foda, mas È a parte mais divertida do processo.\n\nEditar: um cu." );
-			results.add( "Como entrou uma galera nova nos ˙ltimos dias, vale a pena contar a histÛria de novo. Um cara entrou no grupo e eu o cumprimentei com as mesmas palavras que o @Samuelklein Heimdall usou. O cara falou alguma coisa qualquer e saiu do grupo em seguida (h· provas \"printscreengr·ficas\" disso). Claro que a cambada de filhos de umas put... digo, os nobres integrantes desse maravilhoso grupo comeÁaram a me zoar dizendo que era melhor eu n„o voltar a fazer isso para n„o espantar novos participantes. O @Samuelklein Heimdall resolveu, ent„o, transferir sua consciÍncia para um bot dedicado a dar boas vindas aos rookies, com as mesmas palavras, como uma cerimÙnia de iniciaÁ„o. E tem funcionado desde ent„o. Sugeri a ele escolher entre os tÌtulos de \"porteiro\", \"S„o Pedro\" ou \"Heimdall\" e, mesmo com a relaÁ„o que este ˙ltimo tem com o arco Ìris, foi a escolha Ûbvia. E ele precisa brigar o tempo todo para manter esta alcunha. J· distribuÌ outros \"tÌtulos\" a outros usu·rios (que sÛ eu uso, com exceÁ„o do Heimdall, que se amarrou). Quem sabe vocÍ tambÈm n„o recebe um, de acordo com sua participaÁ„o? Dificilmente vocÍs me ver„o no meio de discussıes sÈrias e chatas que sempre rolam por aqui, ent„o posso dizer sem medo: bem vindos a essa loucura. \n\n\n ``` by @rictm```" );
+			results.add( "Fazer uma pauta: complicado, mas, se voc√™ domina ou gosta do assunto, vai tranquilo.\n\nGravar: √© uma loucura foda, mas √© a parte mais divertida do processo.\n\nEditar: um cu." );
+			results.add( "Como entrou uma galera nova nos √∫ltimos dias, vale a pena contar a hist√≥ria de novo. Um cara entrou no grupo e eu o cumprimentei com as mesmas palavras que o @Samuelklein Heimdall usou. O cara falou alguma coisa qualquer e saiu do grupo em seguida (h√° provas \"printscreengr√°ficas\" disso). Claro que a cambada de filhos de umas put... digo, os nobres integrantes desse maravilhoso grupo come√ßaram a me zoar dizendo que era melhor eu n√£o voltar a fazer isso para n√£o espantar novos participantes. O @Samuelklein Heimdall resolveu, ent√£o, transferir sua consci√™ncia para um bot dedicado a dar boas vindas aos rookies, com as mesmas palavras, como uma cerim√¥nia de inicia√ß√£o. E tem funcionado desde ent√£o. Sugeri a ele escolher entre os t√≠tulos de \"porteiro\", \"S√£o Pedro\" ou \"Heimdall\" e, mesmo com a rela√ß√£o que este √∫ltimo tem com o arco √≠ris, foi a escolha √≥bvia. E ele precisa brigar o tempo todo para manter esta alcunha. J√° distribu√≠ outros \"t√≠tulos\" a outros usu√°rios (que s√≥ eu uso, com exce√ß√£o do Heimdall, que se amarrou). Quem sabe voc√™ tamb√©m n√£o recebe um, de acordo com sua participa√ß√£o? Dificilmente voc√™s me ver√£o no meio de discuss√µes s√©rias e chatas que sempre rolam por aqui, ent√£o posso dizer sem medo: bem vindos a essa loucura. \n\n\n ``` by @rictm```" );
 			results.add( "Para melhor ou para pior?" );
 			sendAnswerInlineQuery( converteResultsToResponse( inlineQuery, results ) );
 
@@ -100,7 +100,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
 		sendMessage.enableMarkdown( true );
 		String query = message.getText();
 		query = query.replaceAll( "\\_", "\\\\_" );
-		sendMessage.setText( "Bem vindo, " + query + "\nSinto muito em avisar que sua vis„o do HnC certamente vai mudar\n\n\n``` kiss my shiny metal ass```" );
+		sendMessage.setText( "Bem vindo, " + query + "\nSinto muito em avisar que sua vis√£o do HnC certamente vai mudar\n\n\n``` kiss my shiny metal ass```" );
 		return sendMessage;
 	}
 	
