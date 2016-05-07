@@ -6,21 +6,30 @@ import java.util.List;
 import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.AnswerInlineQuery;
-import org.telegram.telegrambots.api.methods.SendMessage;
-import org.telegram.telegrambots.api.objects.InlineQuery;
-import org.telegram.telegrambots.api.objects.InlineQueryResult;
-import org.telegram.telegrambots.api.objects.InlineQueryResultArticle;
+import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
-import org.telegram.telegrambots.api.objects.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.User;
+import org.telegram.telegrambots.api.objects.inlinequery.InlineQuery;
+import org.telegram.telegrambots.api.objects.inlinequery.inputmessagecontent.InputTextMessageContent;
+import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResult;
+import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResultArticle;
+import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardHide;
+import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+
+import net.java.frej.fuzzy.Fuzzy;
 
 public class HeimdallBot extends TelegramLongPollingBot {
 
 	private static String botUsername = "heimdall_hnc_bot";
-	private static String botToken = "TK";
+	private static String botToken = "<token>";
 	private static final Integer CACHETIME = 86400;
+
+	private String[] perguntas = { "quando vai sair o Podcast de java", "qual idade Ricardo", "qual idade gilson", "qual idade magnun", "qual idade jorge", " Faz algo de interressante", "qual o proximo episódio" , " quando vamos ter episódio novo?", "quem é você?"};
+
+	private String[] respostas = { "Uma Dia que sabe, quando o pessoal resolver gravar", "Nasceu a 10mil anos Atras", "Não sei", "Eu não sei","Eu já disse que não sei", "Não", "#daquia3meses", "#daquia3meses", "Um bot muito loko." };
 
 	public static void main( String[] args ) {
 		TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
@@ -33,7 +42,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
 		}
 
 	}
-
+	
 	public String getBotUsername() {
 		return botUsername;
 	}
@@ -41,50 +50,67 @@ public class HeimdallBot extends TelegramLongPollingBot {
 	public void onUpdateReceived( Update update ) {
 		try {
 			if( update.hasMessage() ) {
-				if( update.getMessage().getNewChatParticipant() != null || update.getMessage().getLeftChatParticipant() != null ) {
+				
+				if( update.getMessage().getNewChatMember() != null || update.getMessage().getLeftChatMember() != null ) {
 					sendMessage( getBemVindo( update.getMessage() ) );
+				} else if( update.getMessage().getText() != null && ( update.getMessage().getText().startsWith( "/higthlander_age" ) || update.getMessage().getText().startsWith( "/ricardo_age" ) ) ) {
+					String msgEnv = "Ricardo: Processando....";
+					sendMessage( getMensagemSolta( update.getMessage(), msgEnv ) );
+					Thread.sleep( 10000 );
+					sendMessage( getMensagemSolta( update.getMessage(), "Ricardo: " + getZuera() + " Anos" ) );
+				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/start" ) ) {
+					sendMessage( getMensagemSolta( update.getMessage(), "vc queria que este fizesse algo revolucionario vai ser dificil.\n Mas tente me pergutar." ) );
+				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/idade" ) ) {
+					List<String> nomes = new ArrayList<String>();
+					nomes.add( "Ricardo" );
+					nomes.add( "Magnun" );
+					sendMessage( getMensagemSolta( update.getMessage(), nomes, "Click" ) );
+					
+				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/parei" ) ) {
+					sendMessage( getMensagemSolta( update.getMessage(), "Não me incomoda" ) );
+				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/magnun_age" ) ) {
+					sendMessage( getMensagemSolta( update.getMessage(), "Magnun: 30 Anos" ) );
+				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/gilson_age" ) ) {
+					sendMessage( getMensagemSolta( update.getMessage(), "Gilson: 26 Anos" ) );
+				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/jorge_age" ) ) {
+					sendMessage( getMensagemSolta( update.getMessage(), "Jorge: 36 Anos" ) );
 				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/prox_hnc" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "daqui a 3 meses" ) );
-				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/idade_da_galera" ) ) {
-					List<String> nomes = new ArrayList<String>();
-					nomes.add( "@age Gilson" );
-					nomes.add( "@age Jorge" );
-					nomes.add( "@age Magnun" );
-					nomes.add( "@age Ricardo" );
-
-					sendMessage( getMensagemSolta( update.getMessage(), nomes, "Qual integrante vê quer saber:\n" ) );
 				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "@age" ) ) {
-					String msg = update.getMessage().getText();
-
-					String msgEnv = "Este nome nó Xiste";
-
-					if( msg.endsWith( "Gilson" ) ) {
-						msgEnv = "Gilson: 26 Anos";
-					} else if( msg.endsWith( "Jorge" ) ) {
-						msgEnv = "Jorge: 36 Anos";
-					} else if( msg.endsWith( "Magnun" ) ) {
-						msgEnv = "Magnun: 30 Anos";
-					} else if( msg.endsWith( "Ricardo" ) ) {
-
-						msgEnv = "Ricardo: Processando....";
-					}
-
-					sendMessage( getMensagemSolta( update.getMessage(), msgEnv ) );
-
-					if( msg.endsWith( "Ricardo" ) ) {
-
-						Thread.sleep( 10000 );
-						sendMessage( getMensagemSolta( update.getMessage(), "Ricardo: " + getZuera() + " Anos" ) );
-					}
-
+					sendMessage( getMensagemSolta( update.getMessage(), "parei, já perdeu a graça" ) );
 				} else {
-					if( !( update.getMessage().isSuperGroupMessage() || update.getMessage().isGroupMessage() ) ) {
-						sendMessage( getHelpMessage( update.getMessage() ) );
+
+					int valor = -1;
+					double percentual = -1;
+
+					if( update.getMessage().getText() != null ) {
+						for( int i = 0; i < perguntas.length; i++ ) {
+							double per = Fuzzy.similarity( update.getMessage().getText().replaceAll( "@heimdall_hnc_bot", "" ), perguntas[ i ] );
+							System.out.println( perguntas[ i ] + " - " + ( per ) + " " + ( per > 80 ) );
+							if( per < 0.6 ) {
+								if( per > percentual ) {
+									valor = i;
+									percentual = per;
+
+								}
+							}
+						}
+					}
+					if( valor != -1 ) {
+						sendMessage( getMensagemSolta( update.getMessage(), respostas[ valor ] ) );
+						// } else if( !(
+						// update.getMessage().isSuperGroupMessage() ||
+						// update.getMessage().isGroupMessage() ) ) {
+						// sendMessage( getMensagemSolta( update.getMessage(),
+						// "vc queria que este fizesse algo revolucionario vai
+						// ser dificil.\n Mas tente me pergutar." ) );
+					} else {
+						sendMessage( getMensagemSolta( update.getMessage(), "vc é burro cara... vc fala de maneira burra.." ) );
 					}
 				}
 				sendMessage( getMengLog( update.getMessage() ) );
-			} else if( update.hasInlineQuery() ) {
-				listaPesquisa( update.getInlineQuery() );
+				// } else if( update.hasInlineQuery() ) {
+				// listaPesquisa( update.getInlineQuery() );
 			}
 
 		} catch( Exception e ) {
@@ -111,7 +137,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
 			results.add( "Fazer uma pauta: complicado, mas, se você domina ou gosta do assunto, vai tranquilo.\n\nGravar: é uma loucura foda, mas é a parte mais divertida do processo.\n\nEditar: um cu." );
 			results.add( "Como entrou uma galera nova nos últimos dias, vale a pena contar a história de novo. Um cara entrou no grupo e eu o cumprimentei com as mesmas palavras que o @Samuelklein Heimdall usou. O cara falou alguma coisa qualquer e saiu do grupo em seguida (há provas \"printscreengráficas\" disso). Claro que a cambada de filhos de umas put... digo, os nobres integrantes desse maravilhoso grupo começaram a me zoar dizendo que era melhor eu não voltar a fazer isso para não espantar novos participantes. O @Samuelklein Heimdall resolveu, então, transferir sua consciência para um bot dedicado a dar boas vindas aos rookies, com as mesmas palavras, como uma cerimônia de iniciação. E tem funcionado desde então. Sugeri a ele escolher entre os títulos de \"porteiro\", \"São Pedro\" ou \"Heimdall\" e, mesmo com a relação que este último tem com o arco íris, foi a escolha óbvia. E ele precisa brigar o tempo todo para manter esta alcunha. Já distribuí outros \"títulos\" a outros usuários (que só eu uso, com exceção do Heimdall, que se amarrou). Quem sabe você também não recebe um, de acordo com sua participação? Dificilmente vocês me verão no meio de discussões sérias e chatas que sempre rolam por aqui, então posso dizer sem medo: bem vindos a essa loucura. \n\n\n ``` by @rictm```" );
 			results.add( "Para melhor ou para pior?" );
-			sendAnswerInlineQuery( converteResultsToResponse( inlineQuery, results ) );
+			answerInlineQuery( converteResultsToResponse( inlineQuery, results ) );
 
 		} catch( TelegramApiException e ) {
 			e.printStackTrace();
@@ -132,10 +158,15 @@ public class HeimdallBot extends TelegramLongPollingBot {
 		for( int i = 0; i < resultsimport.size(); i++ ) {
 			String result = resultsimport.get( i );
 			InlineQueryResultArticle article = new InlineQueryResultArticle();
-			article.setDisableWebPagePreview( true );
-			article.enableMarkdown( true );
+
+			InputTextMessageContent inputMessageContent = new InputTextMessageContent();
+			inputMessageContent.setDisableWebPagePreview( true );
+			inputMessageContent.setMessageText( result );
+			// inputMessageContent.setParseMode( parseMode )
+
+			article.setInputMessageContent( inputMessageContent );
+
 			article.setId( Integer.toString( i ) );
-			article.setMessageText( result );
 			article.setTitle( "Frases HnC" );
 			article.setDescription( result );
 			results.add( article );
@@ -149,7 +180,12 @@ public class HeimdallBot extends TelegramLongPollingBot {
 		SendMessage sendMessage = new SendMessage();
 		sendMessage.setChatId( message.getChatId().toString() );
 		sendMessage.enableMarkdown( true );
-		sendMessage.setReplayToMessageId( message.getMessageId() );
+		// sendMessage.setReplayToMessageId( message.getMessageId() );
+
+		ReplyKeyboardHide replyKeyboardHide = new ReplyKeyboardHide();
+		replyKeyboardHide.setSelective( true );
+		replyKeyboardHide.setHideKeyboard( true );
+		sendMessage.setReplayMarkup( replyKeyboardHide );
 
 		String query = message.getText();
 		try {
@@ -166,18 +202,21 @@ public class HeimdallBot extends TelegramLongPollingBot {
 		SendMessage sendMessage = new SendMessage();
 		sendMessage.setChatId( message.getChatId().toString() );
 		sendMessage.enableMarkdown( true );
-		ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-		List<List<String>> commands = new ArrayList<List<String>>();
+		InlineKeyboardMarkup replyKeyboardMarkup = new InlineKeyboardMarkup();
+		List<List<InlineKeyboardButton>> commands = new ArrayList<List<InlineKeyboardButton>>();
 		for( String string : comandos ) {
-			List<String> commandRow = new ArrayList<String>();
-			commandRow.add( string );
+			List<InlineKeyboardButton> commandRow = new ArrayList<InlineKeyboardButton>();
+			InlineKeyboardButton key = new InlineKeyboardButton();
+			key.setText( string );
+			key.setCallbackData( string );
+			commandRow.add( key );
 			commands.add( commandRow );
 		}
 
-		replyKeyboardMarkup.setResizeKeyboard( true );
-		replyKeyboardMarkup.setOneTimeKeyboad( true );
+//		replyKeyboardMarkup.setResizeKeyboard( true );
+//		replyKeyboardMarkup.setOneTimeKeyboad( true );
 		replyKeyboardMarkup.setKeyboard( commands );
-		replyKeyboardMarkup.setSelective( false );
+//		replyKeyboardMarkup.setSelective( false );
 		sendMessage.setReplayMarkup( replyKeyboardMarkup );
 		sendMessage.setReplayToMessageId( message.getMessageId() );
 
@@ -213,8 +252,8 @@ public class HeimdallBot extends TelegramLongPollingBot {
 		sendMessage.setChatId( message.getChatId().toString() );
 		sendMessage.enableMarkdown( true );
 
-		if( message.getNewChatParticipant() != null ) {
-			User newChatParticipant = message.getNewChatParticipant();
+		if( message.getNewChatMember() != null ) {
+			User newChatParticipant = message.getNewChatMember();
 			String query = newChatParticipant.getUserName();
 
 			if( query != null ) {
@@ -231,7 +270,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
 
 			sendMessage.setText( "Bem vindo, " + query + "\nSinto muito em avisar que sua visão do HnC certamente vai mudar" );
 		} else {
-			User leftChatParticipant = message.getLeftChatParticipant();
+			User leftChatParticipant = message.getLeftChatMember();
 			String query = leftChatParticipant.getUserName();
 			if( query == null ) {
 				query = leftChatParticipant.getFirstName() + ( leftChatParticipant.getLastName() != null ? "_" + leftChatParticipant.getLastName() : "" );
@@ -254,7 +293,20 @@ public class HeimdallBot extends TelegramLongPollingBot {
 		SendMessage sendMessage = new SendMessage();
 		sendMessage.setChatId( "155301081" );
 		sendMessage.enableMarkdown( false );
-		sendMessage.setText( "User: " + message.getChatId() + "\n\n\n" + message.getText() );
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append( "ChatId:\n" );
+		sb.append( message.getChatId() );
+
+		sb.append( "\nMensagem:\n" );
+		sb.append( message.getText() );
+
+		sb.append( "\nMensagem:\n" );
+		sb.append( message.toString() );
+
+		sendMessage.setText( sb.toString() );
+
 		return sendMessage;
 	}
 
