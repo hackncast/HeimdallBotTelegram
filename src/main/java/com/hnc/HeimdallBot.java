@@ -27,9 +27,38 @@ public class HeimdallBot extends TelegramLongPollingBot {
 	private static String botToken = "<token>";
 	private static final Integer CACHETIME = 86400;
 
-	private String[] perguntas = { "quando vai sair o Podcast de java", "qual idade Ricardo", "qual idade gilson", "qual idade magnun", "qual idade jorge", " Faz algo de interressante", "qual o proximo episódio" , " quando vamos ter episódio novo?", "quem é você?"};
+	private String[] perguntas = { 
+			"Qual é a musica",
+			"Ola", 
+			"Opa",
+			"Oi", 
+			"Quieto", 
+			"quando vai sair o Podcast de java", 
+			"qual idade Ricardo", 
+			"qual idade gilson", 
+			"qual idade magnun", 
+			"qual idade jorge", 
+			"Faz algo de interressante", 
+			"qual o proximo episódio" , 
+			"quando vamos ter episódio novo?", 
+			"quem é você?", 
+			"qual é a regra"
+		};
 
-	private String[] respostas = { "Uma Dia que sabe, quando o pessoal resolver gravar", "Nasceu a 10mil anos Atras", "Não sei", "Eu não sei","Eu já disse que não sei", "Não", "#daquia3meses", "#daquia3meses", "Um bot muito loko." };
+	private String[] respostas = { 
+			"Qual é a musica mestro... 😄😄", 
+			"Ola...", 
+			"Opa", 
+			"Oie, Tudo be?", "Ok vou me conter.... \nDesculpa pela minha atitude! \n😊😊😊😊", 
+			"Uma Dia que sabe, quando o pessoal resolver gravar", "Nasceu a 10mil anos Atras",
+			"Não sei",
+			"Eu não sei","Eu já disse que não sei", 
+			"Não", 
+			"#daquia3meses",
+			"#daquia3meses", 
+			"Um bot muito loko.", 
+			"Eu prefiro a regra do @magnunleno Kowalski (dizem que puxar o saco do chefe é uma boa política): vai rebolando e descendo devagarzinho... a gente avisa quando a bunda estiver encostando na garrafa." 
+	};
 
 	public static void main( String[] args ) {
 		TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
@@ -50,6 +79,10 @@ public class HeimdallBot extends TelegramLongPollingBot {
 	public void onUpdateReceived( Update update ) {
 		try {
 			if( update.hasMessage() ) {
+				
+				if(update.getMessage().getFrom() != null && update.getMessage().getFrom().getId() != null && update.getMessage().getFrom().getId() == 155301081 && !update.getMessage().isSuperGroupMessage()){
+					sendMessage( enviarParaHnc(update.getMessage() ) );
+				}
 				
 				if( update.getMessage().getNewChatMember() != null || update.getMessage().getLeftChatMember() != null ) {
 					sendMessage( getBemVindo( update.getMessage() ) );
@@ -81,17 +114,16 @@ public class HeimdallBot extends TelegramLongPollingBot {
 				} else {
 
 					int valor = -1;
-					double percentual = -1;
+					double percentual = 2;
 
 					if( update.getMessage().getText() != null ) {
 						for( int i = 0; i < perguntas.length; i++ ) {
 							double per = Fuzzy.similarity( update.getMessage().getText().replaceAll( "@heimdall_hnc_bot", "" ), perguntas[ i ] );
 							System.out.println( perguntas[ i ] + " - " + ( per ) + " " + ( per > 80 ) );
 							if( per < 0.6 ) {
-								if( per > percentual ) {
+								if( per < percentual ) {
 									valor = i;
 									percentual = per;
-
 								}
 							}
 						}
@@ -105,7 +137,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
 						// "vc queria que este fizesse algo revolucionario vai
 						// ser dificil.\n Mas tente me pergutar." ) );
 					} else {
-						sendMessage( getMensagemSolta( update.getMessage(), "vc é burro cara... vc fala de maneira burra.." ) );
+						sendMessage( getMensagemSolta( update.getMessage(), "não entendi sua pergunta, vc poderia reformulá-la? Acho que tinham alguns bits obstruindo meu pipe de áudio." ) );
 					}
 				}
 				sendMessage( getMengLog( update.getMessage() ) );
@@ -116,6 +148,27 @@ public class HeimdallBot extends TelegramLongPollingBot {
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
+	}
+
+	private SendMessage enviarParaHnc( Message message ) {
+		SendMessage sendMessage = new SendMessage();
+		sendMessage.setChatId( "-1001038708950" );
+		sendMessage.enableMarkdown( true );
+		// sendMessage.setReplayToMessageId( message.getMessageId() );
+
+		ReplyKeyboardHide replyKeyboardHide = new ReplyKeyboardHide();
+		replyKeyboardHide.setSelective( true );
+		replyKeyboardHide.setHideKeyboard( true );
+		sendMessage.setReplayMarkup( replyKeyboardHide );
+
+		String query = message.getText();
+		try {
+			query = query.replaceAll( "\\_", "\\\\_" );
+		} catch( Exception e ) {
+			e.printStackTrace();
+		}
+		sendMessage.setText( message.getText() );
+		return sendMessage;
 	}
 
 	private String getZuera() {
