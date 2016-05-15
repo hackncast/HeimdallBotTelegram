@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.hnc</groupId>
 	<artifactId>HeimdallBot</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>SuperSaiyajin2.5</version>
 	<repositories>
 		<repository>
 			<id>central</id>
@@ -86,7 +86,7 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>com.hnc.HeimdallBot</mainClass>
+									<mainClass>com.hnc.Main</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>
