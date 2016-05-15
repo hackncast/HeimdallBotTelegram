@@ -2,17 +2,34 @@ package com.hnc.db;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+@Entity
+@Table(name = "PERGUNTAS")
 public class PerguntasTB implements Serializable {
 
+	@Transient
 	private static final long serialVersionUID = 1L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "ID")
 	private Integer id;
 
+	@Column(name = "DS_PERGUNTA")
 	private String dsPergunta;
 
+	@Column(name = "DS_RESPOSTA")
 	private String dsResposta;
 
-	private Integer nrPercetual;
+	@Column(name = "NR_PERCENTUAL")
+	private Integer nrPercentual;
 
 	public Integer getId() {
 		return id;
@@ -38,12 +55,14 @@ public class PerguntasTB implements Serializable {
 		this.dsResposta = dsResposta;
 	}
 
-	public Integer getNrPercetual() {
-		return nrPercetual;
+	
+	public Integer getNrPercentual() {
+		return nrPercentual;
 	}
-
-	public void setNrPercetual( Integer nrPercetual ) {
-		this.nrPercetual = nrPercetual;
+	
+	
+	public void setNrPercentual( Integer nrPercentual ) {
+		this.nrPercentual = nrPercentual;
 	}
 
 }

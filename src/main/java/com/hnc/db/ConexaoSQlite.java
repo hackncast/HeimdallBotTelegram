@@ -27,23 +27,19 @@ public class ConexaoSQlite implements Closeable {
 	}
 
 	public void executeUpdate( String sql ) throws SQLException {
-		try (Statement sta = connection.createStatement()) {
-			sta.executeUpdate( sql );
-		}
+		Statement sta = connection.createStatement();
+		sta.executeUpdate( sql );
 	}
 
 	public ResultSet executeQuery( String sql ) throws SQLException {
-		try (Statement sta = connection.createStatement()) {
-			try (ResultSet rs = sta.executeQuery( sql )) {
-				return rs;
-			}
-		}
+		Statement sta = connection.createStatement();
+		ResultSet rs = sta.executeQuery( sql );
+		return rs;
 	}
 
 	public PreparedStatement prepareStatement( String sql ) throws SQLException {
-		try (PreparedStatement sta = connection.prepareStatement( sql )) {
-			return sta;
-		}
+		PreparedStatement sta = connection.prepareStatement( sql );
+		return sta;
 	}
 
 	public void executeUpdate( PreparedStatement sta ) throws SQLException {

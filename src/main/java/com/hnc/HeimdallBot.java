@@ -1,10 +1,11 @@
 package com.hnc;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.telegram.telegrambots.TelegramApiException;
-import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
@@ -19,71 +20,42 @@ import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardHide;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
+import com.hnc.db.PerguntasDB;
+import com.hnc.db.PerguntasTB;
+
 import net.java.frej.fuzzy.Fuzzy;
 
 public class HeimdallBot extends TelegramLongPollingBot {
 
-	private static String botUsername = "heimdall_hnc_bot";
-	private static String botToken = "<token>";
+	private static String botUsername = Configuracao.NOME_HNC_BOT;
+	private static String botToken = Configuracao.TOKEN_HNC_BOT;
 	private static final Integer CACHETIME = 86400;
 
-	private String[] perguntas = { 
-			"Qual é a musica",
-			"Ola", 
-			"Opa",
-			"Oi", 
-			"Quieto", 
-			"quando vai sair o Podcast de java", 
-			"qual idade Ricardo", 
-			"qual idade gilson", 
-			"qual idade magnun", 
-			"qual idade jorge", 
-			"Faz algo de interressante", 
-			"qual o proximo episódio" , 
-			"quando vamos ter episódio novo?", 
-			"quem é você?", 
-			"qual é a regra"
-		};
+	private static PerguntasDB perguntasDB = new PerguntasDB();
 
-	private String[] respostas = { 
-			"Qual é a musica mestro... 😄😄", 
-			"Ola...", 
-			"Opa", 
-			"Oie, Tudo be?", "Ok vou me conter.... \nDesculpa pela minha atitude! \n😊😊😊😊", 
-			"Uma Dia que sabe, quando o pessoal resolver gravar", "Nasceu a 10mil anos Atras",
-			"Não sei",
-			"Eu não sei","Eu já disse que não sei", 
-			"Não", 
-			"#daquia3meses",
-			"#daquia3meses", 
-			"Um bot muito loko.", 
-			"Eu prefiro a regra do @magnunleno Kowalski (dizem que puxar o saco do chefe é uma boa política): vai rebolando e descendo devagarzinho... a gente avisa quando a bunda estiver encostando na garrafa." 
-	};
+	private static List<PerguntasTB> perguntasTBs = null;
 
-	public static void main( String[] args ) {
-		TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
-		try {
-			telegramBotsApi.registerBot( new HeimdallBot() );
+	private String[] perguntas = { "Qual é a musica", "Ola", "Opa", "Oi", "Quieto", "quando vai sair o Podcast de java", "qual idade Ricardo", "qual idade gilson", "qual idade magnun", "qual idade jorge", "Faz algo de interressante", "qual o proximo episódio", "quando vamos ter episódio novo?", "quem é você?", "qual é a regra" };
 
-		} catch( TelegramApiException e ) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	private String[] respostas = { "Qual é a musica mestro... 😄😄", "Ola...", "Opa", "Oie, Tudo be?", "Ok vou me conter.... \nDesculpa pela minha atitude! \n😊😊😊😊", "Uma Dia que sabe, quando o pessoal resolver gravar", "Nasceu a 10mil anos Atras", "Não sei", "Eu não sei", "Eu já disse que não sei", "Não", "#daquia3meses", "#daquia3meses", "Um bot muito loko.", "Eu prefiro a regra do @magnunleno Kowalski (dizem que puxar o saco do chefe é uma boa política): vai rebolando e descendo devagarzinho... a gente avisa quando a bunda estiver encostando na garrafa." };
 
-	}
-	
 	public String getBotUsername() {
 		return botUsername;
 	}
 
 	public void onUpdateReceived( Update update ) {
+
+		if( perguntasTBs == null ) {
+			carregaListaPerguntas();
+		}
+
 		try {
 			if( update.hasMessage() ) {
-				
-				if(update.getMessage().getFrom() != null && update.getMessage().getFrom().getId() != null && update.getMessage().getFrom().getId() == 155301081 && !update.getMessage().isSuperGroupMessage()){
-					sendMessage( enviarParaHnc(update.getMessage() ) );
+
+				if( update.getMessage().getFrom() != null && update.getMessage().getFrom().getId() != null && update.getMessage().getFrom().getId() == 155301081 && !update.getMessage().isSuperGroupMessage() ) {
+					sendMessage( enviarParaHnc( update.getMessage() ) );
 				}
-				
+
 				if( update.getMessage().getNewChatMember() != null || update.getMessage().getLeftChatMember() != null ) {
 					sendMessage( getBemVindo( update.getMessage() ) );
 				} else if( update.getMessage().getText() != null && ( update.getMessage().getText().startsWith( "/higthlander_age" ) || update.getMessage().getText().startsWith( "/ricardo_age" ) ) ) {
@@ -98,9 +70,15 @@ public class HeimdallBot extends TelegramLongPollingBot {
 					nomes.add( "Ricardo" );
 					nomes.add( "Magnun" );
 					sendMessage( getMensagemSolta( update.getMessage(), nomes, "Click" ) );
-					
+
 				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/parei" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "Não me incomoda" ) );
+				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/atualizar" ) ) {
+					try {
+						if( update.getMessage().getFrom().getUserName().equalsIgnoreCase( "samuelklein" ) ) {
+							carregaListaPerguntas();
+						}
+					} catch( Exception e ) {}
 				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/magnun_age" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "Magnun: 30 Anos" ) );
 				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/gilson_age" ) ) {
@@ -113,23 +91,24 @@ public class HeimdallBot extends TelegramLongPollingBot {
 					sendMessage( getMensagemSolta( update.getMessage(), "parei, já perdeu a graça" ) );
 				} else {
 
-					int valor = -1;
+					PerguntasTB perguntasTBvalor = null;
 					double percentual = 2;
 
 					if( update.getMessage().getText() != null ) {
-						for( int i = 0; i < perguntas.length; i++ ) {
-							double per = Fuzzy.similarity( update.getMessage().getText().replaceAll( "@heimdall_hnc_bot", "" ), perguntas[ i ] );
-							System.out.println( perguntas[ i ] + " - " + ( per ) + " " + ( per > 80 ) );
+
+						for( PerguntasTB perguntasTB : perguntasTBs ) {
+							double per = Fuzzy.similarity( update.getMessage().getText().replaceAll( "@heimdall_hnc_bot", "" ), perguntasTB.getDsPergunta() );
+							System.out.println( perguntasTB.getDsPergunta() + " - " + ( per ) + " " + ( per > 80 ) );
 							if( per < 0.6 ) {
 								if( per < percentual ) {
-									valor = i;
+									perguntasTBvalor = perguntasTB;
 									percentual = per;
 								}
 							}
 						}
 					}
-					if( valor != -1 ) {
-						sendMessage( getMensagemSolta( update.getMessage(), respostas[ valor ] ) );
+					if( perguntasTBvalor != null ) {
+						sendMessage( getMensagemSolta( update.getMessage(), perguntasTBvalor.getDsResposta() ) );
 						// } else if( !(
 						// update.getMessage().isSuperGroupMessage() ||
 						// update.getMessage().isGroupMessage() ) ) {
@@ -146,6 +125,14 @@ public class HeimdallBot extends TelegramLongPollingBot {
 			}
 
 		} catch( Exception e ) {
+			e.printStackTrace();
+		}
+	}
+
+	private void carregaListaPerguntas() {
+		try {
+			perguntasTBs = perguntasDB.listar( new PerguntasTB() );
+		} catch( ClassNotFoundException | IOException | SQLException e ) {
 			e.printStackTrace();
 		}
 	}
@@ -266,10 +253,10 @@ public class HeimdallBot extends TelegramLongPollingBot {
 			commands.add( commandRow );
 		}
 
-//		replyKeyboardMarkup.setResizeKeyboard( true );
-//		replyKeyboardMarkup.setOneTimeKeyboad( true );
+		// replyKeyboardMarkup.setResizeKeyboard( true );
+		// replyKeyboardMarkup.setOneTimeKeyboad( true );
 		replyKeyboardMarkup.setKeyboard( commands );
-//		replyKeyboardMarkup.setSelective( false );
+		// replyKeyboardMarkup.setSelective( false );
 		sendMessage.setReplayMarkup( replyKeyboardMarkup );
 		sendMessage.setReplayToMessageId( message.getMessageId() );
 
