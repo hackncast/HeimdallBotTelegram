@@ -5,18 +5,14 @@ import org.telegram.telegrambots.TelegramBotsApi;
 
 import com.hnc.db.PerguntasDB;
 
-public class Main {
-
+class Main {
 	public static void main( String[] args ) {
-		TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
+		TelegramBotsApi telegramBotsApi = new TelegramBotsApi()
 		try {
-			telegramBotsApi.registerBot( new HeimdallBot() );
-			telegramBotsApi.registerBot( new BotControleSQL() );
-
+			telegramBotsApi.registerBot( new HeimdallBot() )
+			telegramBotsApi.registerBot new BotControleSQL()
 		} catch( TelegramApiException e ) {
-			e.printStackTrace();
+			e.printStackTrace
 		}
-
 	}
-
 }

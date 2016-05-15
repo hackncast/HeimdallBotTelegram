@@ -35,9 +35,41 @@ public class HeimdallBot extends TelegramLongPollingBot {
 
 	private static List<PerguntasTB> perguntasTBs = null;
 
-	private String[] perguntas = { "Qual é a musica", "Ola", "Opa", "Oi", "Quieto", "quando vai sair o Podcast de java", "qual idade Ricardo", "qual idade gilson", "qual idade magnun", "qual idade jorge", "Faz algo de interressante", "qual o proximo episódio", "quando vamos ter episódio novo?", "quem é você?", "qual é a regra" };
+	private String[] perguntas = [
+		"Qual é a musica",
+		"Ola",
+		"Opa",
+		"Oi",
+		"Quieto",
+		"quando vai sair o Podcast de java",
+		"qual idade Ricardo",
+		"qual idade gilson",
+		"qual idade magnun",
+		"qual idade jorge",
+		"Faz algo de interressante",
+		"qual o proximo episódio",
+		"quando vamos ter episódio novo?",
+		"quem é você?",
+		"qual é a regra"
+	];
 
-	private String[] respostas = { "Qual é a musica mestro... 😄😄", "Ola...", "Opa", "Oie, Tudo be?", "Ok vou me conter.... \nDesculpa pela minha atitude! \n😊😊😊😊", "Uma Dia que sabe, quando o pessoal resolver gravar", "Nasceu a 10mil anos Atras", "Não sei", "Eu não sei", "Eu já disse que não sei", "Não", "#daquia3meses", "#daquia3meses", "Um bot muito loko.", "Eu prefiro a regra do @magnunleno Kowalski (dizem que puxar o saco do chefe é uma boa política): vai rebolando e descendo devagarzinho... a gente avisa quando a bunda estiver encostando na garrafa." };
+	private String[] respostas = [
+		"Qual é a musica mestro... 😄😄",
+		"Ola...",
+		"Opa",
+		"Oie, Tudo be?",
+		"Ok vou me conter.... \nDesculpa pela minha atitude! \n😊😊😊😊",
+		"Uma Dia que sabe, quando o pessoal resolver gravar",
+		"Nasceu a 10mil anos Atras",
+		"Não sei",
+		"Eu não sei",
+		"Eu já disse que não sei",
+		"Não",
+		"#daquia3meses",
+		"#daquia3meses",
+		"Um bot muito loko.",
+		"Eu prefiro a regra do @magnunleno Kowalski (dizem que puxar o saco do chefe é uma boa política): vai rebolando e descendo devagarzinho... a gente avisa quando a bunda estiver encostando na garrafa."
+	];
 
 	public String getBotUsername() {
 		return botUsername;
@@ -45,60 +77,54 @@ public class HeimdallBot extends TelegramLongPollingBot {
 
 	public void onUpdateReceived( Update update ) {
 
-		if( perguntasTBs == null ) {
+		if( !perguntasTBs ) {
 			carregaListaPerguntas();
 		}
 
 		try {
 			if( update.hasMessage() ) {
-
-				if( update.getMessage().getFrom() != null && update.getMessage().getFrom().getId() != null && update.getMessage().getFrom().getId() == 155301081 && !update.getMessage().isSuperGroupMessage() ) {
-					sendMessage( enviarParaHnc( update.getMessage() ) );
-				}
-
-				if( update.getMessage().getNewChatMember() != null || update.getMessage().getLeftChatMember() != null ) {
+//				if( update.message?.from?.id == 155301081 && !update.message?.superGroupMessage ) {
+//					sendMessage( enviarParaHnc( update.getMessage() ) );
+//				}
+				if( update.message?.newChatMember != null || update.message?.leftChatMember != null ) {
 					sendMessage( getBemVindo( update.getMessage() ) );
-				} else if( update.getMessage().getText() != null && ( update.getMessage().getText().startsWith( "/higthlander_age" ) || update.getMessage().getText().startsWith( "/ricardo_age" ) ) ) {
+				} else if( (update.message?.text?.startsWith( "/higthlander_age" ) || update.message?.text?.startsWith( "/ricardo_age" ) ) ) {
 					String msgEnv = "Ricardo: Processando....";
 					sendMessage( getMensagemSolta( update.getMessage(), msgEnv ) );
 					Thread.sleep( 10000 );
 					sendMessage( getMensagemSolta( update.getMessage(), "Ricardo: " + getZuera() + " Anos" ) );
-				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/start" ) ) {
+				} else if( update.message?.text?.startsWith( "/start" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "vc queria que este fizesse algo revolucionario vai ser dificil.\n Mas tente me pergutar." ) );
-				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/idade" ) ) {
+				} else if( update.message?.text?.startsWith( "/idade" ) ) {
 					List<String> nomes = new ArrayList<String>();
 					nomes.add( "Ricardo" );
 					nomes.add( "Magnun" );
 					sendMessage( getMensagemSolta( update.getMessage(), nomes, "Click" ) );
-
-				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/parei" ) ) {
+				} else if( update.message?.text?.startsWith( "/parei" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "Não me incomoda" ) );
-				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/atualizar" ) ) {
-					try {
-						if( update.getMessage().getFrom().getUserName().equalsIgnoreCase( "samuelklein" ) ) {
-							carregaListaPerguntas();
-						}
-					} catch( Exception e ) {}
-				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/magnun_age" ) ) {
+				} else if( update.message?.text?.startsWith( "/atualizar" ) ) {
+					if( update.message?.from?.userName?.equalsIgnoreCase( "samuelklein" ) ) {
+						carregaListaPerguntas();
+					}
+				} else if( update.message?.text?.startsWith( "/magnun_age" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "Magnun: 30 Anos" ) );
-				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/gilson_age" ) ) {
+				} else if( update.message?.text?.startsWith( "/gilson_age" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "Gilson: 26 Anos" ) );
-				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/jorge_age" ) ) {
+				} else if( update.message?.text?.startsWith( "/jorge_age" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "Jorge: 36 Anos" ) );
-				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "/prox_hnc" ) ) {
+				} else if( update.message?.text?.startsWith( "/prox_hnc" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "daqui a 3 meses" ) );
-				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "@age" ) ) {
+				} else if( update.message?.text?.startsWith( "@age" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "parei, já perdeu a graça" ) );
 				} else {
-					if( update.getMessage().getText() != null && update.getMessage().getText().toLowerCase().contains( "heimdall" ) ){
+
+					if( update.message?.text?.toLowerCase()?.contains( "heimdall" ) || update.message?.replyToMessage?.from?.userName?.equals( "heimdall_hnc_bot" ) ){
 						PerguntasTB perguntasTBvalor = null;
 						double percentual = 2;
-	
-						if( update.getMessage().getText() != null ) {
-	
+						if( update.message?.text != null ) {
 							for( PerguntasTB perguntasTB : perguntasTBs ) {
-								double per = Fuzzy.similarity( update.getMessage().getText().replaceAll( "@heimdall_hnc_bot", "" ), perguntasTB.getDsPergunta() );
-								System.out.println( perguntasTB.getDsPergunta() + " - " + ( per ) + " " + ( per > 80 ) );
+								double per = Fuzzy.similarity( update.message?.text?.replaceAll( "@heimdall_hnc_bot", "" ), perguntasTB.dsPergunta );
+								System.out.println( perguntasTB.dsPergunta + " - " + ( per ) + " " + ( per > 80 ) );
 								if( per < 0.6 ) {
 									if( per < percentual ) {
 										perguntasTBvalor = perguntasTB;
@@ -107,26 +133,25 @@ public class HeimdallBot extends TelegramLongPollingBot {
 								}
 							}
 						}
-						if( perguntasTBvalor != null ) {
-							sendMessage( getMensagemSolta( update.getMessage(), perguntasTBvalor.getDsResposta() ) );
+						if( perguntasTBvalor ) {
+							sendMessage( getMensagemSolta( update.message, perguntasTBvalor.dsResposta ) );
 							// } else if( !(
 							// update.getMessage().isSuperGroupMessage() ||
 							// update.getMessage().isGroupMessage() ) ) {
 							// sendMessage( getMensagemSolta( update.getMessage(),
 							// "vc queria que este fizesse algo revolucionario vai
 							// ser dificil.\n Mas tente me pergutar." ) );
-//						} else {
-//							sendMessage( getMensagemSolta( update.getMessage(), "não entendi sua pergunta, vc poderia reformulá-la? Acho que tinham alguns bits obstruindo meu pipe de áudio." ) );
+							//						} else {
+							//							sendMessage( getMensagemSolta( update.getMessage(), "não entendi sua pergunta, vc poderia reformulá-la? Acho que tinham alguns bits obstruindo meu pipe de áudio." ) );
 						}
 					}
 				}
-				
+
 				sendMessage( getMengLog( update.getMessage() ) );
 
 				// } else if( update.hasInlineQuery() ) {
 				// listaPesquisa( update.getInlineQuery() );
 			}
-
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
@@ -151,19 +176,20 @@ public class HeimdallBot extends TelegramLongPollingBot {
 		replyKeyboardHide.setHideKeyboard( true );
 		sendMessage.setReplayMarkup( replyKeyboardHide );
 
-		String query = message.getText();
-		try {
-			query = query.replaceAll( "\\_", "\\\\_" );
-		} catch( Exception e ) {
-			e.printStackTrace();
-		}
-		sendMessage.setText( message.getText() );
+		sendMessage.setText( message.text );
 		return sendMessage;
 	}
 
 	private String getZuera() {
-
-		String[] msgs = { "segmentation fault", "java.lang.NullPointerException at", "caught this error: ValueError('represents a hidden bug, do not catch this',)", "uncaught #{e} exception while handling connection: #{e.message}", "ReferenceError: idadeRicardo is not defined", "Exception in thread \"idadeRicardo\" java.lang.StackOverflowError at java.io.PrintStream.write(PrintStream.java:480)", "Traceback (most recent call last): File \"<stdin>\", line 42, in <module>NumberIsTooBig: Sorry the number you're trying to calculate is to big" };
+		String[] msgs = [
+			"segmentation fault",
+			"java.lang.NullPointerException at",
+			"caught this error: ValueError('represents a hidden bug, do not catch this',)",
+			"uncaught #{e} exception while handling connection: #{e.message}",
+			"ReferenceError: idadeRicardo is not defined",
+			"Exception in thread \"idadeRicardo\" java.lang.StackOverflowError at java.io.PrintStream.write(PrintStream.java:480)",
+			"Traceback (most recent call last): File \"<stdin>\", line 42, in <module>NumberIsTooBig: Sorry the number you're trying to calculate is to big"
+		]
 
 		return msgs[ (int) ( Math.random() * ( msgs.length - 1 ) ) ];
 	}
@@ -181,7 +207,6 @@ public class HeimdallBot extends TelegramLongPollingBot {
 			results.add( "Como entrou uma galera nova nos últimos dias, vale a pena contar a história de novo. Um cara entrou no grupo e eu o cumprimentei com as mesmas palavras que o @Samuelklein Heimdall usou. O cara falou alguma coisa qualquer e saiu do grupo em seguida (há provas \"printscreengráficas\" disso). Claro que a cambada de filhos de umas put... digo, os nobres integrantes desse maravilhoso grupo começaram a me zoar dizendo que era melhor eu não voltar a fazer isso para não espantar novos participantes. O @Samuelklein Heimdall resolveu, então, transferir sua consciência para um bot dedicado a dar boas vindas aos rookies, com as mesmas palavras, como uma cerimônia de iniciação. E tem funcionado desde então. Sugeri a ele escolher entre os títulos de \"porteiro\", \"São Pedro\" ou \"Heimdall\" e, mesmo com a relação que este último tem com o arco íris, foi a escolha óbvia. E ele precisa brigar o tempo todo para manter esta alcunha. Já distribuí outros \"títulos\" a outros usuários (que só eu uso, com exceção do Heimdall, que se amarrou). Quem sabe você também não recebe um, de acordo com sua participação? Dificilmente vocês me verão no meio de discussões sérias e chatas que sempre rolam por aqui, então posso dizer sem medo: bem vindos a essa loucura. \n\n\n ``` by @rictm```" );
 			results.add( "Para melhor ou para pior?" );
 			answerInlineQuery( converteResultsToResponse( inlineQuery, results ) );
-
 		} catch( TelegramApiException e ) {
 			e.printStackTrace();
 		}
@@ -338,13 +363,10 @@ public class HeimdallBot extends TelegramLongPollingBot {
 		sendMessage.enableMarkdown( false );
 
 		StringBuilder sb = new StringBuilder();
-
 		sb.append( "ChatId:\n" );
 		sb.append( message.getChatId() );
-
 		sb.append( "\nMensagem:\n" );
 		sb.append( message.getText() );
-
 		sb.append( "\nMensagem:\n" );
 		sb.append( message.toString() );
 

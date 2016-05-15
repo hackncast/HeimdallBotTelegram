@@ -33,7 +33,7 @@ public class BotControleUsuario {
 	}
 
 	public void executa( String texto ) {
-		System.out.println( texto );
+		
 		if( texto.startsWith( COMANDO_INICIAR ) ) {
 			enviarMensagem.apply( "Iniciando processo." );
 			comandosAtual = COMANDO_INICIAR;
@@ -64,11 +64,11 @@ public class BotControleUsuario {
 			enviarMensagem.apply( "Tabela Criada" );
 		} else {
 			if( comandosAtual.equals( COMANDO_INCLUIR ) ) {
-				if( perguntasTB.getDsPergunta() == null ) {
-					perguntasTB.setDsPergunta( texto );
+				if( perguntasTB.dsPergunta == null ) {
+					perguntasTB.dsPergunta = texto;
 					enviarMensagem.apply( "Informe a resposta" );
-				} else if( perguntasTB.getDsResposta() == null ) {
-					perguntasTB.setDsResposta( texto );
+				} else if( perguntasTB.dsResposta == null ) {
+					perguntasTB.dsResposta = texto;
 					enviarMensagem.apply( "Gostaria de gravar:" );
 				} else if( texto.toUpperCase().equals( "SIM" ) ) {
 					try {

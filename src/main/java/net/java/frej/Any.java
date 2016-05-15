@@ -20,6 +20,7 @@ along with FREJ.  If not, see <http://www.gnu.org/licenses/>.
 
 package net.java.frej;
 
+import com.hnc.db.PerguntasDB;
 
 final class Any extends Elem {
 
@@ -38,6 +39,7 @@ final class Any extends Elem {
         int bestNum = -1;
         
         matchStart = i;
+        
         matchLen = 0;
         
         for (int j = 0; j < children.length; j++) {

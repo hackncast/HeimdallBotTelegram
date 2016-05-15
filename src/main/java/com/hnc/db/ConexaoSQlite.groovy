@@ -47,8 +47,12 @@ public class ConexaoSQlite implements Closeable {
 	}
 
 	public ResultSet executeQuery( PreparedStatement sta ) throws SQLException {
-		try (ResultSet rs = sta.executeQuery()) {
+		ResultSet rs
+		try {
+			rs = sta.executeQuery()
 			return rs;
+		} finally {
+			rs.close();
 		}
 	}
 
@@ -59,5 +63,4 @@ public class ConexaoSQlite implements Closeable {
 			e.printStackTrace();
 		}
 	}
-
 }
