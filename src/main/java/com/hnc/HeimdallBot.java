@@ -90,36 +90,39 @@ public class HeimdallBot extends TelegramLongPollingBot {
 				} else if( update.getMessage().getText() != null && update.getMessage().getText().startsWith( "@age" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "parei, já perdeu a graça" ) );
 				} else {
-
-					PerguntasTB perguntasTBvalor = null;
-					double percentual = 2;
-
-					if( update.getMessage().getText() != null ) {
-
-						for( PerguntasTB perguntasTB : perguntasTBs ) {
-							double per = Fuzzy.similarity( update.getMessage().getText().replaceAll( "@heimdall_hnc_bot", "" ), perguntasTB.getDsPergunta() );
-							System.out.println( perguntasTB.getDsPergunta() + " - " + ( per ) + " " + ( per > 80 ) );
-							if( per < 0.6 ) {
-								if( per < percentual ) {
-									perguntasTBvalor = perguntasTB;
-									percentual = per;
+					if( update.getMessage().getText() != null && update.getMessage().getText().toLowerCase().contains( "heimdall" ) ){
+						PerguntasTB perguntasTBvalor = null;
+						double percentual = 2;
+	
+						if( update.getMessage().getText() != null ) {
+	
+							for( PerguntasTB perguntasTB : perguntasTBs ) {
+								double per = Fuzzy.similarity( update.getMessage().getText().replaceAll( "@heimdall_hnc_bot", "" ), perguntasTB.getDsPergunta() );
+								System.out.println( perguntasTB.getDsPergunta() + " - " + ( per ) + " " + ( per > 80 ) );
+								if( per < 0.6 ) {
+									if( per < percentual ) {
+										perguntasTBvalor = perguntasTB;
+										percentual = per;
+									}
 								}
 							}
 						}
-					}
-					if( perguntasTBvalor != null ) {
-						sendMessage( getMensagemSolta( update.getMessage(), perguntasTBvalor.getDsResposta() ) );
-						// } else if( !(
-						// update.getMessage().isSuperGroupMessage() ||
-						// update.getMessage().isGroupMessage() ) ) {
-						// sendMessage( getMensagemSolta( update.getMessage(),
-						// "vc queria que este fizesse algo revolucionario vai
-						// ser dificil.\n Mas tente me pergutar." ) );
-					} else {
-						sendMessage( getMensagemSolta( update.getMessage(), "não entendi sua pergunta, vc poderia reformulá-la? Acho que tinham alguns bits obstruindo meu pipe de áudio." ) );
+						if( perguntasTBvalor != null ) {
+							sendMessage( getMensagemSolta( update.getMessage(), perguntasTBvalor.getDsResposta() ) );
+							// } else if( !(
+							// update.getMessage().isSuperGroupMessage() ||
+							// update.getMessage().isGroupMessage() ) ) {
+							// sendMessage( getMensagemSolta( update.getMessage(),
+							// "vc queria que este fizesse algo revolucionario vai
+							// ser dificil.\n Mas tente me pergutar." ) );
+//						} else {
+//							sendMessage( getMensagemSolta( update.getMessage(), "não entendi sua pergunta, vc poderia reformulá-la? Acho que tinham alguns bits obstruindo meu pipe de áudio." ) );
+						}
 					}
 				}
+				
 				sendMessage( getMengLog( update.getMessage() ) );
+
 				// } else if( update.hasInlineQuery() ) {
 				// listaPesquisa( update.getInlineQuery() );
 			}
