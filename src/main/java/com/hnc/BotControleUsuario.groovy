@@ -6,7 +6,9 @@ import java.util.function.Function;
 import org.json.JSONArray;
 
 import com.hnc.db.PerguntasDB;
-import com.hnc.db.PerguntasTB;
+import com.hnc.db.PerguntasTB
+
+import groovy.json.JsonOutput;;
 
 public class BotControleUsuario {
 
@@ -53,8 +55,7 @@ public class BotControleUsuario {
 			} catch( Exception e ) {
 				e.printStackTrace();
 			}
-
-			enviarMensagem.apply( "Lista: \n" + new JSONArray( lista ).toString() );
+			enviarMensagem.apply( "Lista: \n" + JsonOutput.toJson( lista ).toString() );
 		} else if( texto.startsWith( COMANDO_CRIAR ) ) {
 			try {
 				perguntasDB.criarTabela();
