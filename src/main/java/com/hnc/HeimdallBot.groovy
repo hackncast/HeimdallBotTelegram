@@ -83,9 +83,9 @@ public class HeimdallBot extends TelegramLongPollingBot {
 
 		try {
 			if( update.hasMessage() ) {
-//				if( update.message?.from?.id == 155301081 && !update.message?.superGroupMessage ) {
-//					sendMessage( enviarParaHnc( update.getMessage() ) );
-//				}
+				if( update.message?.from?.id == 155301081 && !update.message?.superGroupMessage ) {
+					sendMessage( enviarParaHnc( update.getMessage() ) );
+				}
 				if( update.message?.newChatMember != null || update.message?.leftChatMember != null ) {
 					sendMessage( getBemVindo( update.getMessage() ) );
 				} else if( (update.message?.text?.startsWith( "/higthlander_age" ) || update.message?.text?.startsWith( "/ricardo_age" ) ) ) {
