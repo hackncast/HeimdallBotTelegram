@@ -76,6 +76,11 @@ public class HeimdallBot extends TelegramLongPollingBot {
 	}
 
 	public void onUpdateReceived( Update update ) {
+		Thread.start({ threadUpdateReceived( update ); });
+	}
+
+
+	public void threadUpdateReceived( Update update ) {
 
 		if( !perguntasTBs ) {
 			carregaListaPerguntas();
@@ -83,6 +88,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
 
 		try {
 			if( update.hasMessage() ) {
+
 				if( update.message?.from?.id == 155301081 && !update.message?.superGroupMessage ) {
 					sendMessage( enviarParaHnc( update.getMessage() ) );
 				}
@@ -156,6 +162,8 @@ public class HeimdallBot extends TelegramLongPollingBot {
 			e.printStackTrace();
 		}
 	}
+
+
 
 	private void carregaListaPerguntas() {
 		try {
