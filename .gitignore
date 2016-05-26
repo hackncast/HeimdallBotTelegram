@@ -3,6 +3,7 @@
 .classpath
 .settings
 .metadata
+.idea
 dependency-reduced-pom.xml
 
 # OS generated files #
