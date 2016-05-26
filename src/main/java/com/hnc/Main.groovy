@@ -12,7 +12,7 @@ class Main {
 			telegramBotsApi.registerBot( new HeimdallBot() )
 			telegramBotsApi.registerBot new BotControleSQL()
 		} catch( TelegramApiException e ) {
-			e.printStackTrace
+			e.printStackTrace()
 		}
 	}
 }

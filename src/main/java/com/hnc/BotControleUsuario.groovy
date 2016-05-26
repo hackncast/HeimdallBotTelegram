@@ -35,7 +35,7 @@ public class BotControleUsuario {
 	}
 
 	public void executa( String texto ) {
-		
+
 		if( texto.startsWith( COMANDO_INICIAR ) ) {
 			enviarMensagem.apply( "Iniciando processo." );
 			comandosAtual = COMANDO_INICIAR;
@@ -81,11 +81,7 @@ public class BotControleUsuario {
 					enviarMensagem.apply( "gravando: " + perguntasTB.getId() );
 					comandosAtual = COMANDO_INICIAR;
 				}
-
 			}
-
 		}
-
 	}
-
 }

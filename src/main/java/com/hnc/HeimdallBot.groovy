@@ -122,6 +122,8 @@ public class HeimdallBot extends TelegramLongPollingBot {
 					sendMessage( getMensagemSolta( update.getMessage(), "daqui a 3 meses" ) );
 				} else if( update.message?.text?.startsWith( "@age" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "parei, já perdeu a graça" ) );
+				} else if( update.message?.text?.equals( "qual minha sorte de hoje?" ) ) {
+					sendMessage( getMensagemSolta( update.getMessage(), BolachaDaSorte.abrirPacote(), true ) );
 				} else {
 
 					if( update.message?.text?.toLowerCase()?.contains( "heimdall" ) || update.message?.replyToMessage?.from?.userName?.equals( "heimdall_hnc_bot" ) ){
@@ -252,11 +254,17 @@ public class HeimdallBot extends TelegramLongPollingBot {
 	}
 
 	private static SendMessage getMensagemSolta( Message message, String msg ) {
+		return getMensagemSolta( message, msg, false);
+	}
+
+	private static SendMessage getMensagemSolta( Message message, String msg, boolean responde ) {
 
 		SendMessage sendMessage = new SendMessage();
 		sendMessage.setChatId( message.getChatId().toString() );
 		sendMessage.enableMarkdown( true );
-		// sendMessage.setReplayToMessageId( message.getMessageId() );
+		if(responde){
+			sendMessage.setReplayToMessageId( message.getMessageId() );
+		}
 
 		ReplyKeyboardHide replyKeyboardHide = new ReplyKeyboardHide();
 		replyKeyboardHide.setSelective( true );
