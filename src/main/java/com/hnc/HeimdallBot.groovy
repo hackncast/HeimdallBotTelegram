@@ -122,7 +122,9 @@ public class HeimdallBot extends TelegramLongPollingBot {
 					sendMessage( getMensagemSolta( update.getMessage(), "daqui a 3 meses" ) );
 				} else if( update.message?.text?.startsWith( "@age" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "parei, já perdeu a graça" ) );
-				} else if( Fuzzy.similarity(update.message?.text?.toUpperCase(), "QUAL MINHA SORTE DE HOJE?" )  < 0.6 ) {
+				} else if( update.message?.text?.toUpperCase() != null && Fuzzy.similarity(update.message?.text?.toUpperCase(), "QUAL MINHA SORTE DE HOJE?" )  < 0.6 ) {
+					sendMessage( getMensagemSolta( update.getMessage(), BolachaDaSorte.abrirPacote(), true ) );
+				} else if( update.message?.text?.toUpperCase() != null && Fuzzy.similarity(update.message?.text?.toUpperCase(), "SORTE QUAL HOJE MINHA?" )  < 0.6 ) {
 					sendMessage( getMensagemSolta( update.getMessage(), BolachaDaSorte.abrirPacote(), true ) );
 				} else {
 
