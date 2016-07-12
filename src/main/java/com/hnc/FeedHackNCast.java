@@ -25,7 +25,7 @@ public class FeedHackNCast {
 		urls = new ArrayList<>();
 		titulos = new ArrayList<>();
 		try {
-			URL url = new URL( "http://feeds.feedburner.com/hack-n-cast" );
+			URL url = new URL( "http://feeds.feedburner.com/hackncast" );
 
 			SyndFeedInput input = new SyndFeedInput();
 			SyndFeed feed = input.build( new XmlReader( url ) );
