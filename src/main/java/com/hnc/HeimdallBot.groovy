@@ -113,10 +113,16 @@ public class HeimdallBot extends TelegramLongPollingBot {
 				} else if( update.message?.text?.toUpperCase().startsWith( "/ATUALIZAROPENCAST" ) ) {
 					if( update.message?.from?.userName?.equalsIgnoreCase( "samuelklein" ) ) {
 						FeedOpenCast.instance.carregaLinks();
+						FeedHackNCast.instance.carregaLinks();
 					}
 				} else if( update.message?.text?.toUpperCase().startsWith( "/OPENCAST" ) ) {
 					def urls = FeedOpenCast.instance.urls;
 					def titulos = FeedOpenCast.instance.titulos;
+					int sorte = (int) ( Math.random() * ( urls.size() - 1 ) );
+					sendMessage( getMensagemSolta( update.getMessage(), "[" + titulos.get( sorte ) + "](" + urls.get( sorte ) + ")" ) );
+				} else if( update.message?.text?.toUpperCase().startsWith( "/HACKNCAST" ) ) {
+					def urls = FeedHackNCast.instance.urls;
+					def titulos = FeedHackNCast.instance.titulos;
 					int sorte = (int) ( Math.random() * ( urls.size() - 1 ) );
 					sendMessage( getMensagemSolta( update.getMessage(), "[" + titulos.get( sorte ) + "](" + urls.get( sorte ) + ")" ) );
 				} else if( update.message?.text?.startsWith( "/atualizar" ) ) {

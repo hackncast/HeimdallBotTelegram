@@ -15,13 +15,13 @@ public class FeedReadTest {
 	@Test
 	public void testLerFeed() {
 		try {
-			URL url = new URL( "http://tecnologiaaberta.com.br/feed/" );
+			URL url = new URL( "http://feeds.feedburner.com/hack-n-cast" );
 
 			SyndFeedInput input = new SyndFeedInput();
 			SyndFeed feed = input.build( new XmlReader( url ) );
 			for( Iterator i = feed.getEntries().iterator(); i.hasNext(); ) {
 				SyndEntry entry = (SyndEntry) i.next();
-				System.out.println( entry.getUri().isEmpty());
+				System.out.println( entry.getTitle());
 				System.out.println( entry.getUri() );
 			}
 		} catch( Exception e ) {
