@@ -73,8 +73,18 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-		
-		
+		<dependency>
+			<groupId>rome</groupId>
+			<artifactId>rome</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.1</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<properties>

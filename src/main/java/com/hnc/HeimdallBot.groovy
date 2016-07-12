@@ -76,7 +76,9 @@ public class HeimdallBot extends TelegramLongPollingBot {
 	}
 
 	public void onUpdateReceived( Update update ) {
-		Thread.start({ threadUpdateReceived( update ); });
+		Thread.start({
+			threadUpdateReceived( update );
+		});
 	}
 
 
@@ -108,6 +110,15 @@ public class HeimdallBot extends TelegramLongPollingBot {
 					sendMessage( getMensagemSolta( update.getMessage(), nomes, "Click" ) );
 				} else if( update.message?.text?.startsWith( "/parei" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "Não me incomoda" ) );
+				} else if( update.message?.text?.toUpperCase().startsWith( "/ATUALIZAROPENCAST" ) ) {
+					if( update.message?.from?.userName?.equalsIgnoreCase( "samuelklein" ) ) {
+						FeedOpenCast.instance.carregaLinks();
+					}
+				} else if( update.message?.text?.toUpperCase().startsWith( "/OPENCAST" ) ) {
+					def urls = FeedOpenCast.instance.urls;
+					def titulos = FeedOpenCast.instance.titulos;
+					int sorte = (int) ( Math.random() * ( urls.size() - 1 ) );
+					sendMessage( getMensagemSolta( update.getMessage(), "[" + titulos.get( sorte ) + "](" + urls.get( sorte ) + ")" ) );
 				} else if( update.message?.text?.startsWith( "/atualizar" ) ) {
 					if( update.message?.from?.userName?.equalsIgnoreCase( "samuelklein" ) ) {
 						carregaListaPerguntas();
@@ -122,7 +133,9 @@ public class HeimdallBot extends TelegramLongPollingBot {
 					sendMessage( getMensagemSolta( update.getMessage(), "daqui a 3 meses" ) );
 				} else if( update.message?.text?.startsWith( "@age" ) ) {
 					sendMessage( getMensagemSolta( update.getMessage(), "parei, já perdeu a graça" ) );
-				} else if( Fuzzy.similarity(update.message?.text?.toUpperCase(), "QUAL MINHA SORTE DE HOJE?" )  < 0.6 ) {
+				} else if( update.message?.text?.toUpperCase() != null && Fuzzy.similarity(update.message?.text?.toUpperCase(), "QUAL MINHA SORTE DE HOJE?" )  < 0.6 ) {
+					sendMessage( getMensagemSolta( update.getMessage(), BolachaDaSorte.abrirPacote(), true ) );
+				} else if( update.message?.text?.toUpperCase() != null && Fuzzy.similarity(update.message?.text?.toUpperCase(), "SORTE QUAL HOJE MINHA?" )  < 0.6 ) {
 					sendMessage( getMensagemSolta( update.getMessage(), BolachaDaSorte.abrirPacote(), true ) );
 				} else {
 
@@ -277,6 +290,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
+		sendMessage.enableMarkdown( true );
 		sendMessage.setText( msg );
 		return sendMessage;
 	}
