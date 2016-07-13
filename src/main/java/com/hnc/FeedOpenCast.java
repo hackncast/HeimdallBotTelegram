@@ -25,7 +25,8 @@ public class FeedOpenCast {
 		urls = new ArrayList<>();
 		titulos = new ArrayList<>();
 		try {
-			URL url = new URL( "http://tecnologiaaberta.com.br/feed/" );
+			URL url = new URL( 
+"http://tecnologiaaberta.com.br/feed/opencast" );
 
 			SyndFeedInput input = new SyndFeedInput();
 			SyndFeed feed = input.build( new XmlReader( url ) );
