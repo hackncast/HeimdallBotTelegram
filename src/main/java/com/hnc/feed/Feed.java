@@ -1,4 +1,4 @@
-package com.hnc;
+package com.hnc.feed;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,12 +9,12 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
-public class FeedHackNCast {
+public class Feed {
 
-	private static FeedHackNCast myself;
+	private String sUrl;
 
-	private FeedHackNCast() {
-		myself = this;
+	public Feed( String sUrl ) {
+		this.sUrl = sUrl;
 		carregaLinks();
 	}
 
@@ -25,7 +25,7 @@ public class FeedHackNCast {
 		urls = new ArrayList<>();
 		titulos = new ArrayList<>();
 		try {
-			URL url = new URL( "http://feeds.feedburner.com/hackncast" );
+			URL url = new URL( sUrl );
 
 			SyndFeedInput input = new SyndFeedInput();
 			SyndFeed feed = input.build( new XmlReader( url ) );
@@ -40,8 +40,7 @@ public class FeedHackNCast {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	public ArrayList<String> getTitulos() {
 		return titulos;
 	}
@@ -50,11 +49,9 @@ public class FeedHackNCast {
 		return urls;
 	}
 
-	public static FeedHackNCast getInstance() {
-		if( myself == null ) {
-			myself = new FeedHackNCast();
-		}
-		return myself;
+	public String getMensagemRandom() {
+		int sorte = (int) ( Math.random() * ( urls.size() - 1 ) );
+		return "[" + titulos.get( sorte ) + "](" + urls.get( sorte ) + ")";
 	}
 
 }

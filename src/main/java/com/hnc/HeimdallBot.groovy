@@ -1,29 +1,29 @@
 package com.hnc;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.SQLException
 
-import org.telegram.telegrambots.TelegramApiException;
-import org.telegram.telegrambots.api.methods.AnswerInlineQuery;
-import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.objects.Message;
-import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.api.objects.User;
-import org.telegram.telegrambots.api.objects.inlinequery.InlineQuery;
-import org.telegram.telegrambots.api.objects.inlinequery.inputmessagecontent.InputTextMessageContent;
-import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResult;
-import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResultArticle;
-import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardHide;
-import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import net.java.frej.fuzzy.Fuzzy
 
-import com.hnc.db.PerguntasDB;
-import com.hnc.db.PerguntasTB;
+import org.telegram.telegrambots.TelegramApiException
+import org.telegram.telegrambots.api.methods.AnswerInlineQuery
+import org.telegram.telegrambots.api.methods.send.SendMessage
+import org.telegram.telegrambots.api.objects.Message
+import org.telegram.telegrambots.api.objects.Update
+import org.telegram.telegrambots.api.objects.User
+import org.telegram.telegrambots.api.objects.inlinequery.InlineQuery
+import org.telegram.telegrambots.api.objects.inlinequery.inputmessagecontent.InputTextMessageContent
+import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResult
+import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResultArticle
+import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardHide
+import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton
+import org.telegram.telegrambots.bots.TelegramLongPollingBot
 
-import net.java.frej.fuzzy.Fuzzy;
+import com.hnc.db.PerguntasDB
+import com.hnc.db.PerguntasTB
+import com.hnc.feed.FeedHackNCast
+import com.hnc.feed.FeedOpenCast
+import com.hnc.feed.FeedPiratas
 
 public class HeimdallBot extends TelegramLongPollingBot {
 
@@ -76,9 +76,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
 	}
 
 	public void onUpdateReceived( Update update ) {
-		Thread.start({
-			threadUpdateReceived( update );
-		});
+		Thread.start({ threadUpdateReceived( update ); });
 	}
 
 
@@ -114,17 +112,14 @@ public class HeimdallBot extends TelegramLongPollingBot {
 					if( update.message?.from?.userName?.equalsIgnoreCase( "samuelklein" ) ) {
 						FeedOpenCast.instance.carregaLinks();
 						FeedHackNCast.instance.carregaLinks();
+						FeedPiratas.instance.carregaLinks();
 					}
 				} else if( update.message?.text?.toUpperCase().startsWith( "/OPENCAST" ) ) {
-					def urls = FeedOpenCast.instance.urls;
-					def titulos = FeedOpenCast.instance.titulos;
-					int sorte = (int) ( Math.random() * ( urls.size() - 1 ) );
-					sendMessage( getMensagemSolta( update.getMessage(), "[" + titulos.get( sorte ) + "](" + urls.get( sorte ) + ")" ) );
+					sendMessage( getMensagemSolta( update.getMessage(), FeedOpenCast.instance.mensagemRandom ) );
+				} else if( update.message?.text?.toUpperCase().startsWith( "/PIRATAS" ) ) {
+					sendMessage( getMensagemSolta( update.getMessage(), FeedPiratas.instance.mensagemRandom ) );
 				} else if( update.message?.text?.toUpperCase().startsWith( "/HACKNCAST" ) ) {
-					def urls = FeedHackNCast.instance.urls;
-					def titulos = FeedHackNCast.instance.titulos;
-					int sorte = (int) ( Math.random() * ( urls.size() - 1 ) );
-					sendMessage( getMensagemSolta( update.getMessage(), "[" + titulos.get( sorte ) + "](" + urls.get( sorte ) + ")" ) );
+					sendMessage( getMensagemSolta( update.getMessage(), FeedHackNCast.instance.mensagemRandom ) );
 				} else if( update.message?.text?.startsWith( "/atualizar" ) ) {
 					if( update.message?.from?.userName?.equalsIgnoreCase( "samuelklein" ) ) {
 						carregaListaPerguntas();
