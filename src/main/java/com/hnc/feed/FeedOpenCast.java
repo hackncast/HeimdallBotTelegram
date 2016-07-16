@@ -5,7 +5,7 @@ public class FeedOpenCast extends Feed {
 	private static FeedOpenCast myself;
 
 	private FeedOpenCast() {
-		super( "http://tecnologiaaberta.com.br/feed/opencast" );
+		super( "http://tecnologiaaberta.com.br/feed" );
 		myself = this;
 		carregaLinks();
 	}
