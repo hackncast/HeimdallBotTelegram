@@ -1,10 +1,11 @@
-package com.hnc;
+package com.hnc
+
+import org.telegram.telegrambots.api.methods.ForwardMessage;
 
 import java.sql.SQLException
 
 import net.java.frej.fuzzy.Fuzzy
 
-import org.telegram.telegrambots.TelegramApiException
 import org.telegram.telegrambots.api.methods.AnswerInlineQuery
 import org.telegram.telegrambots.api.methods.send.SendMessage
 import org.telegram.telegrambots.api.objects.Message
@@ -15,399 +16,293 @@ import org.telegram.telegrambots.api.objects.inlinequery.inputmessagecontent.Inp
 import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResult
 import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResultArticle
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup
-import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardHide
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 
-import com.hnc.db.PerguntasDB
-import com.hnc.db.PerguntasTB
 import com.hnc.feed.FeedHackNCast
 import com.hnc.feed.FeedOpenCast
 import com.hnc.feed.FeedPiratas
 
 public class HeimdallBot extends TelegramLongPollingBot {
 
-	private static String botUsername = Configuracao.NOME_HNC_BOT;
-	private static String botToken = Configuracao.TOKEN_HNC_BOT;
-	private static final Integer CACHETIME = 86400;
+    private static String botUsername = Configuracao.NOME_HNC_BOT;
+    private static String botToken = Configuracao.TOKEN_HNC_BOT;
+    private static final Integer CACHETIME = 86400;
 
-	private static PerguntasDB perguntasDB = new PerguntasDB();
+    public String getBotUsername() {
+        return botUsername;
+    }
 
-	private static List<PerguntasTB> perguntasTBs = null;
-
-	private String[] perguntas = [
-		"Qual é a musica",
-		"Ola",
-		"Opa",
-		"Oi",
-		"Quieto",
-		"quando vai sair o Podcast de java",
-		"qual idade Ricardo",
-		"qual idade gilson",
-		"qual idade magnun",
-		"qual idade jorge",
-		"Faz algo de interressante",
-		"qual o proximo episódio",
-		"quando vamos ter episódio novo?",
-		"quem é você?",
-		"qual é a regra"
-	];
-
-	private String[] respostas = [
-		"Qual é a musica mestro... 😄😄",
-		"Ola...",
-		"Opa",
-		"Oie, Tudo be?",
-		"Ok vou me conter.... \nDesculpa pela minha atitude! \n😊😊😊😊",
-		"Uma Dia que sabe, quando o pessoal resolver gravar",
-		"Nasceu a 10mil anos Atras",
-		"Não sei",
-		"Eu não sei",
-		"Eu já disse que não sei",
-		"Não",
-		"#daquia3meses",
-		"#daquia3meses",
-		"Um bot muito loko.",
-		"Eu prefiro a regra do @magnunleno Kowalski (dizem que puxar o saco do chefe é uma boa política): vai rebolando e descendo devagarzinho... a gente avisa quando a bunda estiver encostando na garrafa."
-	];
-
-	public String getBotUsername() {
-		return botUsername;
-	}
-
-	public void onUpdateReceived( Update update ) {
-		Thread.start({ threadUpdateReceived( update ); });
-	}
+    public void onUpdateReceived(Update update) {
+        Thread.start({ threadUpdateReceived(update); });
+    }
 
 
-	public void threadUpdateReceived( Update update ) {
+    public void threadUpdateReceived(Update update) {
+        try {
 
-		if( !perguntasTBs ) {
-			carregaListaPerguntas();
-		}
+            if (update.hasMessage()) {
+                print(update.message.toString())
+                if (update.message?.from?.id == 155301081 && !update.message?.superGroupMessage) {
+                    sendMessage(enviarParaHnc(update.getMessage()));
+                }
+                if (update.message?.newChatMember != null || update.message?.leftChatMember != null) {
+                    sendMessage(getBemVindo(update.getMessage()));
+                } else {
+                    String mensagem = update.message?.text;
+                    String usuario = update.message?.from?.userName;
 
-		try {
-			if( update.hasMessage() ) {
+                    if (mensagem) {
+                        mensagem = mensagem.toUpperCase();
+                        if (mensagem.startsWith("/ATUALIZARFEED")) {
+                            if (usuario?.equalsIgnoreCase("samuelklein")) {
+                                FeedOpenCast.instance.carregaLinks();
+                                FeedHackNCast.instance.carregaLinks();
+                                FeedPiratas.instance.carregaLinks();
+                            }
+                        } else if (mensagem.startsWith("/OPENCAST")) {
+                            sendMessage(getMensagemSolta(update.getMessage(), FeedOpenCast.instance.mensagemRandom));
+                        } else if (mensagem.startsWith("/PIRATAS")) {
+                            sendMessage(getMensagemSolta(update.getMessage(), FeedPiratas.instance.mensagemRandom));
+                        } else if (mensagem.startsWith("/HACKNCAST")) {
+                            sendMessage(getMensagemSolta(update.getMessage(), FeedHackNCast.instance.mensagemRandom));
+                        } else if (!mensagem.startsWith("/")) {
+                            if (mensagem.contains("SORTE")) {
+                                if ((Fuzzy.similarity(mensagem, "QUAL MINHA SORTE DE HOJE?") < 0.6) || (Fuzzy.similarity(mensagem, "SORTE QUAL HOJE MINHA?") < 0.6)) {
+                                    sendMessage(getMensagemSolta(update.getMessage(), BolachaDaSorte.abrirPacote(), true));
+                                }
+                            }
+                        }
 
-				if( update.message?.from?.id == 155301081 && !update.message?.superGroupMessage ) {
-					sendMessage( enviarParaHnc( update.getMessage() ) );
-				}
-				if( update.message?.newChatMember != null || update.message?.leftChatMember != null ) {
-					sendMessage( getBemVindo( update.getMessage() ) );
-				} else if( (update.message?.text?.startsWith( "/higthlander_age" ) || update.message?.text?.startsWith( "/ricardo_age" ) ) ) {
-					String msgEnv = "Ricardo: Processando....";
-					sendMessage( getMensagemSolta( update.getMessage(), msgEnv ) );
-					Thread.sleep( 10000 );
-					sendMessage( getMensagemSolta( update.getMessage(), "Ricardo: " + getZuera() + " Anos" ) );
-				} else if( update.message?.text?.startsWith( "/start" ) ) {
-					sendMessage( getMensagemSolta( update.getMessage(), "vc queria que este fizesse algo revolucionario vai ser dificil.\n Mas tente me pergutar." ) );
-				} else if( update.message?.text?.startsWith( "/idade" ) ) {
-					List<String> nomes = new ArrayList<String>();
-					nomes.add( "Ricardo" );
-					nomes.add( "Magnun" );
-					sendMessage( getMensagemSolta( update.getMessage(), nomes, "Click" ) );
-				} else if( update.message?.text?.startsWith( "/parei" ) ) {
-					sendMessage( getMensagemSolta( update.getMessage(), "Não me incomoda" ) );
-				} else if( update.message?.text?.toUpperCase().startsWith( "/ATUALIZAROPENCAST" ) ) {
-					if( update.message?.from?.userName?.equalsIgnoreCase( "samuelklein" ) ) {
-						FeedOpenCast.instance.carregaLinks();
-						FeedHackNCast.instance.carregaLinks();
-						FeedPiratas.instance.carregaLinks();
-					}
-				} else if( update.message?.text?.toUpperCase().startsWith( "/OPENCAST" ) ) {
-					sendMessage( getMensagemSolta( update.getMessage(), FeedOpenCast.instance.mensagemRandom ) );
-				} else if( update.message?.text?.toUpperCase().startsWith( "/PIRATAS" ) ) {
-					sendMessage( getMensagemSolta( update.getMessage(), FeedPiratas.instance.mensagemRandom ) );
-				} else if( update.message?.text?.toUpperCase().startsWith( "/HACKNCAST" ) ) {
-					sendMessage( getMensagemSolta( update.getMessage(), FeedHackNCast.instance.mensagemRandom ) );
-				} else if( update.message?.text?.startsWith( "/atualizar" ) ) {
-					if( update.message?.from?.userName?.equalsIgnoreCase( "samuelklein" ) ) {
-						carregaListaPerguntas();
-					}
-				} else if( update.message?.text?.startsWith( "/magnun_age" ) ) {
-					sendMessage( getMensagemSolta( update.getMessage(), "Magnun: 30 Anos" ) );
-				} else if( update.message?.text?.startsWith( "/gilson_age" ) ) {
-					sendMessage( getMensagemSolta( update.getMessage(), "Gilson: 26 Anos" ) );
-				} else if( update.message?.text?.startsWith( "/jorge_age" ) ) {
-					sendMessage( getMensagemSolta( update.getMessage(), "Jorge: 36 Anos" ) );
-				} else if( update.message?.text?.startsWith( "/prox_hnc" ) ) {
-					sendMessage( getMensagemSolta( update.getMessage(), "daqui a 3 meses" ) );
-				} else if( update.message?.text?.startsWith( "@age" ) ) {
-					sendMessage( getMensagemSolta( update.getMessage(), "parei, já perdeu a graça" ) );
-				} else if( update.message?.text?.toUpperCase() != null && Fuzzy.similarity(update.message?.text?.toUpperCase(), "QUAL MINHA SORTE DE HOJE?" )  < 0.6 ) {
-					sendMessage( getMensagemSolta( update.getMessage(), BolachaDaSorte.abrirPacote(), true ) );
-				} else if( update.message?.text?.toUpperCase() != null && Fuzzy.similarity(update.message?.text?.toUpperCase(), "SORTE QUAL HOJE MINHA?" )  < 0.6 ) {
-					sendMessage( getMensagemSolta( update.getMessage(), BolachaDaSorte.abrirPacote(), true ) );
-				} else {
+                    }
+                }
 
-					if( update.message?.text?.toLowerCase()?.contains( "heimdall" ) || update.message?.replyToMessage?.from?.userName?.equals( "heimdall_hnc_bot" ) ){
-						PerguntasTB perguntasTBvalor = null;
-						double percentual = 2;
-						if( update.message?.text != null ) {
-							for( PerguntasTB perguntasTB : perguntasTBs ) {
-								double per = Fuzzy.similarity( update.message?.text?.replaceAll( "@heimdall_hnc_bot", "" ), perguntasTB.dsPergunta );
-								System.out.println( perguntasTB.dsPergunta + " - " + ( per ) + " " + ( per > 80 ) );
-								if( per < 0.6 ) {
-									if( per < percentual ) {
-										perguntasTBvalor = perguntasTB;
-										percentual = per;
-									}
-								}
-							}
-						}
-						if( perguntasTBvalor ) {
-							sendMessage( getMensagemSolta( update.message, perguntasTBvalor.dsResposta ) );
-							// } else if( !(
-							// update.getMessage().isSuperGroupMessage() ||
-							// update.getMessage().isGroupMessage() ) ) {
-							// sendMessage( getMensagemSolta( update.getMessage(),
-							// "vc queria que este fizesse algo revolucionario vai
-							// ser dificil.\n Mas tente me pergutar." ) );
-							//						} else {
-							//							sendMessage( getMensagemSolta( update.getMessage(), "não entendi sua pergunta, vc poderia reformulá-la? Acho que tinham alguns bits obstruindo meu pipe de áudio." ) );
-						}
-					}
-				}
+                forwardMessage(criarEncaminhar(update))
+                try {
+                    if (update.getMessage().hasDocument() && update.getMessage().getDocument().mimeType.equals("video/mp4")) {
+                        forwardMessage(criarEncaminharGif(update))
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+//                encaminharTudo(update);
+//                sendMessage(getMengLog(update.getMessage()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-				sendMessage( getMengLog( update.getMessage() ) );
+//    void encaminharTudo(Update update) {
+//
+//
+//        (1..10).each { i ->
+//            try {
+//                ForwardMessage f1 = new ForwardMessage();
+//                f1.setChatId("@lixotest");
+//                f1.setFromChatId(update.getMessage().getChatId().toString());
+//                f1.setMessageId(i);
+//
+//                forwardMessage(f1)
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//
+//    }
 
-				// } else if( update.hasInlineQuery() ) {
-				// listaPesquisa( update.getInlineQuery() );
-			}
-		} catch( Exception e ) {
-			e.printStackTrace();
-		}
-	}
+    ForwardMessage criarEncaminhar(Update update) {
+        ForwardMessage forwardMessage = new ForwardMessage();
+//        forwardMessage.setChatId("155301081");
+        forwardMessage.setChatId("@lixotest");
+        forwardMessage.setFromChatId(update.getMessage().getChatId().toString());
+        forwardMessage.setMessageId(update.getMessage().messageId);
+    }
+
+    ForwardMessage criarEncaminharGif(Update update) {
+        ForwardMessage forwardMessage = new ForwardMessage();
+        forwardMessage.setChatId("-1001073538901");
+        forwardMessage.setFromChatId(update.getMessage().getChatId().toString());
+        forwardMessage.setMessageId(update.getMessage().messageId);
+    }
+
+    private SendMessage enviarParaHnc(Message message) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId("-1001038708950");
+        sendMessage.enableMarkdown(true);
 
 
+        // sendMessage.setReplayToMessageId( message.getMessageId() );
 
-	private void carregaListaPerguntas() {
-		try {
-			perguntasTBs = perguntasDB.listar( new PerguntasTB() );
-		} catch( ClassNotFoundException | IOException | SQLException e ) {
-			e.printStackTrace();
-		}
-	}
+//        ReplyKeyboardHide replyKeyboardHide = new ReplyKeyboardHide();
+//        replyKeyboardHide.setSelective(true);
+//        replyKeyboardHide.setHideKeyboard(true);
+//        sendMessage.setReplayMarkup(replyKeyboardHide);
 
-	private SendMessage enviarParaHnc( Message message ) {
-		SendMessage sendMessage = new SendMessage();
-		sendMessage.setChatId( "-1001038708950" );
-		sendMessage.enableMarkdown( true );
-		// sendMessage.setReplayToMessageId( message.getMessageId() );
+        sendMessage.setText(message.text);
+        return sendMessage;
+    }
 
-		ReplyKeyboardHide replyKeyboardHide = new ReplyKeyboardHide();
-		replyKeyboardHide.setSelective( true );
-		replyKeyboardHide.setHideKeyboard( true );
-		sendMessage.setReplayMarkup( replyKeyboardHide );
+    private static AnswerInlineQuery converteResultsToResponse(InlineQuery inlineQuery, List<String> results) {
+        AnswerInlineQuery answerInlineQuery = new AnswerInlineQuery();
+        answerInlineQuery.setInlineQueryId(inlineQuery.getId());
+        answerInlineQuery.setCacheTime(CACHETIME);
+        answerInlineQuery.setResults(convertResults(results));
+        return answerInlineQuery;
+    }
 
-		sendMessage.setText( message.text );
-		return sendMessage;
-	}
+    private static List<InlineQueryResult> convertResults(List<String> resultsimport) {
+        List<InlineQueryResult> results = new ArrayList<InlineQueryResult>();
 
-	private String getZuera() {
-		String[] msgs = [
-			"segmentation fault",
-			"java.lang.NullPointerException at",
-			"caught this error: ValueError('represents a hidden bug, do not catch this',)",
-			"uncaught #{e} exception while handling connection: #{e.message}",
-			"ReferenceError: idadeRicardo is not defined",
-			"Exception in thread \"idadeRicardo\" java.lang.StackOverflowError at java.io.PrintStream.write(PrintStream.java:480)",
-			"Traceback (most recent call last): File \"<stdin>\", line 42, in <module>NumberIsTooBig: Sorry the number you're trying to calculate is to big"
-		]
+        for (int i = 0; i < resultsimport.size(); i++) {
+            String result = resultsimport.get(i);
+            InlineQueryResultArticle article = new InlineQueryResultArticle();
 
-		return msgs[ (int) ( Math.random() * ( msgs.length - 1 ) ) ];
-	}
+            InputTextMessageContent inputMessageContent = new InputTextMessageContent();
+            inputMessageContent.setDisableWebPagePreview(true);
+            inputMessageContent.setMessageText(result);
+            // inputMessageContent.setParseMode( parseMode )
 
-	private void listaPesquisa( InlineQuery inlineQuery ) {
-		String query = inlineQuery.getQuery();
-		try {
-			List<String> results = new ArrayList<String>();
-			if( !query.isEmpty() ) {
-				query = query.replaceAll( "\\_", "\\\\_" );
-				results.add( "Bem vindo, " + query + "\nSinto muito em avisar que sua visão do HnC certamente vai mudar" );
-			}
+            article.setInputMessageContent(inputMessageContent);
 
-			results.add( "Fazer uma pauta: complicado, mas, se você domina ou gosta do assunto, vai tranquilo.\n\nGravar: é uma loucura foda, mas é a parte mais divertida do processo.\n\nEditar: um cu." );
-			results.add( "Como entrou uma galera nova nos últimos dias, vale a pena contar a história de novo. Um cara entrou no grupo e eu o cumprimentei com as mesmas palavras que o @Samuelklein Heimdall usou. O cara falou alguma coisa qualquer e saiu do grupo em seguida (há provas \"printscreengráficas\" disso). Claro que a cambada de filhos de umas put... digo, os nobres integrantes desse maravilhoso grupo começaram a me zoar dizendo que era melhor eu não voltar a fazer isso para não espantar novos participantes. O @Samuelklein Heimdall resolveu, então, transferir sua consciência para um bot dedicado a dar boas vindas aos rookies, com as mesmas palavras, como uma cerimônia de iniciação. E tem funcionado desde então. Sugeri a ele escolher entre os títulos de \"porteiro\", \"São Pedro\" ou \"Heimdall\" e, mesmo com a relação que este último tem com o arco íris, foi a escolha óbvia. E ele precisa brigar o tempo todo para manter esta alcunha. Já distribuí outros \"títulos\" a outros usuários (que só eu uso, com exceção do Heimdall, que se amarrou). Quem sabe você também não recebe um, de acordo com sua participação? Dificilmente vocês me verão no meio de discussões sérias e chatas que sempre rolam por aqui, então posso dizer sem medo: bem vindos a essa loucura. \n\n\n ``` by @rictm```" );
-			results.add( "Para melhor ou para pior?" );
-			answerInlineQuery( converteResultsToResponse( inlineQuery, results ) );
-		} catch( TelegramApiException e ) {
-			e.printStackTrace();
-		}
-	}
+            article.setId(Integer.toString(i));
+            article.setTitle("Frases HnC");
+            article.setDescription(result);
+            results.add(article);
+        }
 
-	private static AnswerInlineQuery converteResultsToResponse( InlineQuery inlineQuery, List<String> results ) {
-		AnswerInlineQuery answerInlineQuery = new AnswerInlineQuery();
-		answerInlineQuery.setInlineQueryId( inlineQuery.getId() );
-		answerInlineQuery.setCacheTime( CACHETIME );
-		answerInlineQuery.setResults( convertResults( results ) );
-		return answerInlineQuery;
-	}
+        return results;
+    }
 
-	private static List<InlineQueryResult> convertResults( List<String> resultsimport ) {
-		List<InlineQueryResult> results = new ArrayList<InlineQueryResult>();
+    private static SendMessage getMensagemSolta(Message message, String msg) {
+        return getMensagemSolta(message, msg, false);
+    }
 
-		for( int i = 0; i < resultsimport.size(); i++ ) {
-			String result = resultsimport.get( i );
-			InlineQueryResultArticle article = new InlineQueryResultArticle();
+    private static SendMessage getMensagemSolta(Message message, String msg, boolean responde) {
 
-			InputTextMessageContent inputMessageContent = new InputTextMessageContent();
-			inputMessageContent.setDisableWebPagePreview( true );
-			inputMessageContent.setMessageText( result );
-			// inputMessageContent.setParseMode( parseMode )
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(message.getChatId().toString());
+        sendMessage.enableMarkdown(true);
+        if (responde) {
+            sendMessage.setReplayToMessageId(message.getMessageId());
+        }
 
-			article.setInputMessageContent( inputMessageContent );
+//        ReplyKeyboardHide replyKeyboardHide = new ReplyKeyboardHide();
+//        replyKeyboardHide.setSelective(true);
+//        replyKeyboardHide.setHideKeyboard(true);
+//        sendMessage.setReplayMarkup(replyKeyboardHide);
 
-			article.setId( Integer.toString( i ) );
-			article.setTitle( "Frases HnC" );
-			article.setDescription( result );
-			results.add( article );
-		}
+        String query = message.getText();
+        try {
+            query = query.replaceAll("\\_", "\\\\_");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sendMessage.enableMarkdown(true);
+        sendMessage.setText(msg);
+        return sendMessage;
+    }
 
-		return results;
-	}
+    private static SendMessage getMensagemSolta(Message message, List<String> comandos, String msg) {
 
-	private static SendMessage getMensagemSolta( Message message, String msg ) {
-		return getMensagemSolta( message, msg, false);
-	}
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(message.getChatId().toString());
+        sendMessage.enableMarkdown(true);
+        InlineKeyboardMarkup replyKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> commands = new ArrayList<List<InlineKeyboardButton>>();
+        for (String string : comandos) {
+            List<InlineKeyboardButton> commandRow = new ArrayList<InlineKeyboardButton>();
+            InlineKeyboardButton key = new InlineKeyboardButton();
+            key.setText(string);
+            key.setCallbackData(string);
+            commandRow.add(key);
+            commands.add(commandRow);
+        }
 
-	private static SendMessage getMensagemSolta( Message message, String msg, boolean responde ) {
+        // replyKeyboardMarkup.setResizeKeyboard( true );
+        // replyKeyboardMarkup.setOneTimeKeyboad( true );
+        replyKeyboardMarkup.setKeyboard(commands);
+        // replyKeyboardMarkup.setSelective( false );
+        sendMessage.setReplayMarkup(replyKeyboardMarkup);
+        sendMessage.setReplayToMessageId(message.getMessageId());
 
-		SendMessage sendMessage = new SendMessage();
-		sendMessage.setChatId( message.getChatId().toString() );
-		sendMessage.enableMarkdown( true );
-		if(responde){
-			sendMessage.setReplayToMessageId( message.getMessageId() );
-		}
+        String query = message.getText();
+        try {
+            query = query.replaceAll("\\_", "\\\\_");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sendMessage.setText(msg);
+        return sendMessage;
+    }
 
-		ReplyKeyboardHide replyKeyboardHide = new ReplyKeyboardHide();
-		replyKeyboardHide.setSelective( true );
-		replyKeyboardHide.setHideKeyboard( true );
-		sendMessage.setReplayMarkup( replyKeyboardHide );
+    private static SendMessage getBemVindo(Message message) {
 
-		String query = message.getText();
-		try {
-			query = query.replaceAll( "\\_", "\\\\_" );
-		} catch( Exception e ) {
-			e.printStackTrace();
-		}
-		sendMessage.enableMarkdown( true );
-		sendMessage.setText( msg );
-		return sendMessage;
-	}
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(message.getChatId().toString());
+        sendMessage.enableMarkdown(true);
 
-	private static SendMessage getMensagemSolta( Message message, List<String> comandos, String msg ) {
+        if (message.getNewChatMember() != null) {
+            User newChatParticipant = message.getNewChatMember();
+            String query = newChatParticipant.getUserName();
 
-		SendMessage sendMessage = new SendMessage();
-		sendMessage.setChatId( message.getChatId().toString() );
-		sendMessage.enableMarkdown( true );
-		InlineKeyboardMarkup replyKeyboardMarkup = new InlineKeyboardMarkup();
-		List<List<InlineKeyboardButton>> commands = new ArrayList<List<InlineKeyboardButton>>();
-		for( String string : comandos ) {
-			List<InlineKeyboardButton> commandRow = new ArrayList<InlineKeyboardButton>();
-			InlineKeyboardButton key = new InlineKeyboardButton();
-			key.setText( string );
-			key.setCallbackData( string );
-			commandRow.add( key );
-			commands.add( commandRow );
-		}
+            if (query != null) {
+                query = "@" + query;
+            } else {
+                query = newChatParticipant.getFirstName() + (newChatParticipant.getLastName() != null ? "_" + newChatParticipant.getLastName() : "");
+            }
 
-		// replyKeyboardMarkup.setResizeKeyboard( true );
-		// replyKeyboardMarkup.setOneTimeKeyboad( true );
-		replyKeyboardMarkup.setKeyboard( commands );
-		// replyKeyboardMarkup.setSelective( false );
-		sendMessage.setReplayMarkup( replyKeyboardMarkup );
-		sendMessage.setReplayToMessageId( message.getMessageId() );
+            try {
+                query = query.replaceAll("\\_", "\\\\_");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-		String query = message.getText();
-		try {
-			query = query.replaceAll( "\\_", "\\\\_" );
-		} catch( Exception e ) {
-			e.printStackTrace();
-		}
-		sendMessage.setText( msg );
-		return sendMessage;
-	}
 
-	private static SendMessage getHelpMessage( Message message ) {
 
-		SendMessage sendMessage = new SendMessage();
-		sendMessage.setChatId( message.getChatId().toString() );
-		sendMessage.enableMarkdown( true );
+            sendMessage.setText("Bem vindo, " + query + "\nSinto muito em avisar que sua visão do HnC certamente vai mudar");
+        } else {
+            User leftChatParticipant = message.getLeftChatMember();
+            String query = leftChatParticipant.getUserName();
+            if (query == null) {
+                query = leftChatParticipant.getFirstName() + (leftChatParticipant.getLastName() != null ? "_" + leftChatParticipant.getLastName() : "");
+            }
 
-		String query = message.getText();
-		try {
-			query = query.replaceAll( "\\_", "\\\\_" );
-		} catch( Exception e ) {
-			e.printStackTrace();
-		}
-		sendMessage.setText( "Bem vindo, " + query + "\nSinto muito em avisar que sua visão do HnC certamente vai mudar\n\n\n``` kiss my shiny metal ass```" );
-		return sendMessage;
-	}
+            try {
+                query = query.replaceAll("\\_", "\\\\_");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-	private static SendMessage getBemVindo( Message message ) {
+            sendMessage.setText(query + " não aguentou a presão!");
+        }
 
-		SendMessage sendMessage = new SendMessage();
-		sendMessage.setChatId( message.getChatId().toString() );
-		sendMessage.enableMarkdown( true );
+        return sendMessage;
+    }
 
-		if( message.getNewChatMember() != null ) {
-			User newChatParticipant = message.getNewChatMember();
-			String query = newChatParticipant.getUserName();
+    private static SendMessage getMengLog(Message message) {
 
-			if( query != null ) {
-				query = "@" + query;
-			} else {
-				query = newChatParticipant.getFirstName() + ( newChatParticipant.getLastName() != null ? "_" + newChatParticipant.getLastName() : "" );
-			}
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId("155301081");
 
-			try {
-				query = query.replaceAll( "\\_", "\\\\_" );
-			} catch( Exception e ) {
-				e.printStackTrace();
-			}
+        sendMessage.enableMarkdown(false);
 
-			sendMessage.setText( "Bem vindo, " + query + "\nSinto muito em avisar que sua visão do HnC certamente vai mudar" );
-		} else {
-			User leftChatParticipant = message.getLeftChatMember();
-			String query = leftChatParticipant.getUserName();
-			if( query == null ) {
-				query = leftChatParticipant.getFirstName() + ( leftChatParticipant.getLastName() != null ? "_" + leftChatParticipant.getLastName() : "" );
-			}
+        StringBuilder sb = new StringBuilder();
+        sb.append("```")
+        sb.append("ChatId:\n");
+        sb.append(message.getChatId());
+        sb.append("\nMensagem:\n");
+        sb.append(message.getText());
+        sb.append("\nMensagem:\n");
+        sb.append(message.toString());
+        sb.append("```")
+        sendMessage.setText(sb.toString());
 
-			try {
-				query = query.replaceAll( "\\_", "\\\\_" );
-			} catch( Exception e ) {
-				e.printStackTrace();
-			}
+        return sendMessage;
+    }
 
-			sendMessage.setText( query + " não aguentou a presão!" );
-		}
-
-		return sendMessage;
-	}
-
-	private static SendMessage getMengLog( Message message ) {
-
-		SendMessage sendMessage = new SendMessage();
-		sendMessage.setChatId( "155301081" );
-		sendMessage.enableMarkdown( false );
-
-		StringBuilder sb = new StringBuilder();
-		sb.append( "ChatId:\n" );
-		sb.append( message.getChatId() );
-		sb.append( "\nMensagem:\n" );
-		sb.append( message.getText() );
-		sb.append( "\nMensagem:\n" );
-		sb.append( message.toString() );
-
-		sendMessage.setText( sb.toString() );
-
-		return sendMessage;
-	}
-
-	public String getBotToken() {
-		return botToken;
-	}
-
+    public String getBotToken() {
+        return botToken;
+    }
 }

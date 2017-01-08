@@ -9,20 +9,15 @@ public class BolachaDaSorte {
 	public static String abrirPacote() {
 
 		try {
-			StringBuilder sb = new StringBuilder();
-			Process process = Runtime.getRuntime().exec( "fortune" );
+			def sb =  StringBuilder.newInstance()
+			Process process = Runtime.runtime.exec( "fortune" )
 
-			InputStream is = process.getInputStream();
-			InputStreamReader isr = new InputStreamReader( is );
-			BufferedReader br = new BufferedReader( isr );
-			String line;
-
-			while( ( line = br.readLine() ) != null ) {
-				sb.append( line );
-				sb.append( "\n" );
+			process.getInputStream().eachLine { line ->
+				sb << line
+				sb << "\n"
 			}
 
-			return sb.toString();
+			return sb.toString()
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}

@@ -20,8 +20,6 @@ along with FREJ.  If not, see <http://www.gnu.org/licenses/>.
 
 package net.java.frej;
 
-import com.hnc.db.PerguntasDB;
-
 final class Any extends Elem {
 
     

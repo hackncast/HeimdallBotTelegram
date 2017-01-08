@@ -18,9 +18,9 @@
 	</repositories>
 	<dependencies>
 		<dependency>
-			<groupId>com.github.rubenlagus</groupId>
-			<artifactId>TelegramBots</artifactId>
-			<version>v2.3.2</version>
+			<groupId>org.telegram</groupId>
+			<artifactId>telegrambots</artifactId>
+			<version>2.4.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

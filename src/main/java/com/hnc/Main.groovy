@@ -1,17 +1,20 @@
-package com.hnc;
+package com.hnc
 
-import org.telegram.telegrambots.TelegramApiException;
-import org.telegram.telegrambots.TelegramBotsApi;
+import org.telegram.telegrambots.ApiContextInitializer;
+import org.telegram.telegrambots.TelegramBotsApi
 
-import com.hnc.db.PerguntasDB;
+
 
 class Main {
+
 	public static void main( String[] args ) {
+		ApiContextInitializer.init();
 		TelegramBotsApi telegramBotsApi = new TelegramBotsApi()
 		try {
-			telegramBotsApi.registerBot( new HeimdallBot() );
-			telegramBotsApi.registerBot( new BotControleSQL() );
-		} catch( TelegramApiException e ) {
+
+			print("começa")
+			telegramBotsApi.registerBot( new HeimdallBot() )
+		} catch( Exception e ) {
 			e.printStackTrace()
 		}
 	}
