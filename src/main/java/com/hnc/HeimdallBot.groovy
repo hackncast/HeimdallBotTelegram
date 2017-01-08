@@ -114,8 +114,8 @@ public class HeimdallBot extends TelegramLongPollingBot {
 
     ForwardMessage criarEncaminhar(Update update) {
         ForwardMessage forwardMessage = new ForwardMessage();
-//        forwardMessage.setChatId("155301081");
-        forwardMessage.setChatId("@lixotest");
+        forwardMessage.setChatId("155301081");
+//        forwardMessage.setChatId("@lixotest");
         forwardMessage.setFromChatId(update.getMessage().getChatId().toString());
         forwardMessage.setMessageId(update.getMessage().messageId);
     }
