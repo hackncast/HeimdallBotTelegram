@@ -15,7 +15,7 @@ public class FeedReadTest {
 	@Test
 	public void testLerFeed() {
 		try {
-			URL url = new URL( "http://feeds.feedburner.com/hack-n-cast" );
+			URL url = new URL( " http://feeds.feedburner.com/CastalioPodcastMP3" );
 
 			SyndFeedInput input = new SyndFeedInput();
 			SyndFeed feed = input.build( new XmlReader( url ) );

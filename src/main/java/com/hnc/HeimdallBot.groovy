@@ -1,9 +1,7 @@
 package com.hnc
 
-import org.telegram.telegrambots.api.methods.ForwardMessage;
-
-import java.sql.SQLException
-
+import com.hnc.feed.FeedCastalioCast
+import org.telegram.telegrambots.api.methods.ForwardMessage
 import net.java.frej.fuzzy.Fuzzy
 
 import org.telegram.telegrambots.api.methods.AnswerInlineQuery
@@ -33,8 +31,11 @@ public class HeimdallBot extends TelegramLongPollingBot {
         return botUsername;
     }
 
-    public void onUpdateReceived(Update update) {
-        Thread.start({ threadUpdateReceived(update); });
+
+
+
+    public void onUpdateReceived(Update update2) {
+        Thread.start({ threadUpdateReceived(update2); });
     }
 
 
@@ -66,6 +67,8 @@ public class HeimdallBot extends TelegramLongPollingBot {
                             sendMessage(getMensagemSolta(update.getMessage(), FeedPiratas.instance.mensagemRandom));
                         } else if (mensagem.startsWith("/HACKNCAST")) {
                             sendMessage(getMensagemSolta(update.getMessage(), FeedHackNCast.instance.mensagemRandom));
+                        } else if (mensagem.startsWith("/CASTALIO")) {
+                            sendMessage(getMensagemSolta(update.getMessage(), FeedCastalioCast.instance.mensagemRandom));
                         } else if (!mensagem.startsWith("/")) {
                             if (mensagem.contains("SORTE")) {
                                 if ((Fuzzy.similarity(mensagem, "QUAL MINHA SORTE DE HOJE?") < 0.6) || (Fuzzy.similarity(mensagem, "SORTE QUAL HOJE MINHA?") < 0.6)) {
@@ -85,6 +88,8 @@ public class HeimdallBot extends TelegramLongPollingBot {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+
 //                encaminharTudo(update);
 //                sendMessage(getMengLog(update.getMessage()));
             }
