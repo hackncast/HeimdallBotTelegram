@@ -31,9 +31,6 @@ public class HeimdallBot extends TelegramLongPollingBot {
         return botUsername;
     }
 
-
-
-
     public void onUpdateReceived(Update update2) {
         Thread.start({ threadUpdateReceived(update2); });
     }
@@ -69,6 +66,21 @@ public class HeimdallBot extends TelegramLongPollingBot {
                             sendMessage(getMensagemSolta(update.getMessage(), FeedHackNCast.instance.mensagemRandom));
                         } else if (mensagem.startsWith("/CASTALIO")) {
                             sendMessage(getMensagemSolta(update.getMessage(), FeedCastalioCast.instance.mensagemRandom));
+                        } else if (mensagem.startsWith("/LISTASORTEIO")) {
+                            sendMessage(getMensagemSolta(update.getMessage(), Sorteio.getSorteio().getLista(), true));
+                        } else if (mensagem.startsWith("/SORTEAR")) {
+                            if (usuario?.equalsIgnoreCase("samuelklein")) {
+                                sendMessage(getMensagemSolta(update.getMessage(), "O ganhador é o @" +Sorteio.getSorteio().mensagemRandom, true));
+                            }
+                        } else if (mensagem.contains("#QUEROUMJOGODASTEAM")) {
+                            Sorteio sorteio = Sorteio.getSorteio();
+                            String userName = update.message?.newChatMember?.userName;
+                            if (userName) {
+                                sorteio.addPessoa(userName);
+                                sendMessage(getMensagemSolta(update.getMessage(), "Incluido no sorteio @" + userName + "\n\n\n\n" + sorteio.getLista(), true));
+                            } else {
+                                sendMessage(getMensagemSolta(update.getMessage(), "Para participar do sorteio precisa cadastrar o @ do usuario", true));
+                            }
                         } else if (!mensagem.startsWith("/")) {
                             if (mensagem.contains("SORTE")) {
                                 if ((Fuzzy.similarity(mensagem, "QUAL MINHA SORTE DE HOJE?") < 0.6) || (Fuzzy.similarity(mensagem, "SORTE QUAL HOJE MINHA?") < 0.6)) {
@@ -263,9 +275,6 @@ public class HeimdallBot extends TelegramLongPollingBot {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
-
             sendMessage.setText("Bem vindo, " + query + "\nSinto muito em avisar que sua visão do HnC certamente vai mudar");
         } else {
             User leftChatParticipant = message.getLeftChatMember();
