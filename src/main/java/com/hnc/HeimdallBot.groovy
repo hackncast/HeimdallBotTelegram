@@ -75,6 +75,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
                         } else if (mensagem.contains("#QUEROUMJOGODASTEAM")) {
                             Sorteio sorteio = Sorteio.getSorteio();
                             String userName = update.message?.from?.userName;
+                            
                             if (userName) {
                                 sorteio.addPessoa(userName);
                                 sendMessage(getMensagemSolta(update.getMessage(), "Incluido no sorteio @" + userName + "\n\n\n\n" + sorteio.getLista(), true));
