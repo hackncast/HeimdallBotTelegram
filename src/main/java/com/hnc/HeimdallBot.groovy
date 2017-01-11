@@ -202,7 +202,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.enableMarkdown(true);
         if (responde) {
-            sendMessage.setReplayToMessageId(message.getMessageId());
+            sendMessage.setReplyToMessageId(message.getMessageId());
         }
 
 //        ReplyKeyboardHide replyKeyboardHide = new ReplyKeyboardHide();
@@ -242,7 +242,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
         replyKeyboardMarkup.setKeyboard(commands);
         // replyKeyboardMarkup.setSelective( false );
         sendMessage.setReplayMarkup(replyKeyboardMarkup);
-        sendMessage.setReplayToMessageId(message.getMessageId());
+        sendMessage.setReplyToMessageId(message.getMessageId());
 
         String query = message.getText();
         try {
