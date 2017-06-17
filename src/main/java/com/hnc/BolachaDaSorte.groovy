@@ -1,8 +1,4 @@
-package com.hnc;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+package com.hnc
 
 public class BolachaDaSorte {
 
@@ -19,6 +15,7 @@ public class BolachaDaSorte {
 
 			return sb.toString()
 		} catch( Exception e ) {
+			print(e.getMessage());
 			e.printStackTrace();
 		}
 
