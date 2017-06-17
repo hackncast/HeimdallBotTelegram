@@ -30,8 +30,8 @@ public class Feed {
             SyndFeed feed = input.build( new XmlReader( url ) );
             for( Iterator i = feed.getEntries().iterator(); i.hasNext(); ) {
                 SyndEntry entry = (SyndEntry) i.next();
-                if( entry != null && entry.getUri() != null && !entry.getUri().isEmpty() ) {
-                    urls.add( entry.getUri() )
+                if( entry != null && entry.getLink() != null && !entry.getLink().isEmpty() ) {
+                    urls.add( entry.getLink() )
                     titulos.add( entry.getTitle() )
                 }
             }
