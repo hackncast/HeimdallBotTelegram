@@ -6,7 +6,7 @@ public class BolachaDaSorte {
 
 		try {
 			def sb =  StringBuilder.newInstance()
-			Process process = Runtime.runtime.exec( "fortune" )
+			Process process = Runtime.runtime.exec( "/usr/games/fortune" )
 
 			process.getInputStream().eachLine { line ->
 				sb << line
