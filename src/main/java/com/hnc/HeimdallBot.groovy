@@ -1,5 +1,6 @@
 package com.hnc
 
+import com.hnc.bd.Usuario
 import com.hnc.feed.FeedCastalioCast
 import org.telegram.telegrambots.api.methods.ForwardMessage
 import net.java.frej.fuzzy.Fuzzy
@@ -26,6 +27,12 @@ public class HeimdallBot extends TelegramLongPollingBot {
     private static String botUsername = Configuracao.NOME_HNC_BOT;
     private static String botToken = Configuracao.TOKEN_HNC_BOT;
     private static final Integer CACHETIME = 86400;
+
+    private ControleXP controleXP;
+
+    public HeimdallBot() {
+        controleXP = ControleXP.getInstance();
+    }
 
     public String getBotUsername() {
         return botUsername;
@@ -70,14 +77,55 @@ public class HeimdallBot extends TelegramLongPollingBot {
                             sendMessage(getMensagemSolta(update.getMessage(), Sorteio.getSorteio().getLista(), true));
                         } else if (mensagem.startsWith("/SORTEAR")) {
                             if (usuario?.equalsIgnoreCase("samuelklein")) {
-                                sendMessage(getMensagemSolta(update.getMessage(), "O ganhador é o @" +Sorteio.getSorteio().mensagemRandom, true));
+                                sendMessage(getMensagemSolta(update.getMessage(), "O ganhador é o @" + Sorteio.getSorteio().mensagemRandom, true));
+                            }
+                        } else if (mensagem.contains("XP")) {
+                            if (update.message?.replyToMessage) {
+                                Integer id = update.message?.from?.id;
+                                String userNameResposta = update.message?.replyToMessage?.from?.userName;
+                                Integer idResposta = update.message?.replyToMessage?.from?.id;
+                                if (userNameResposta) {
+                                    if(usuario.equals(userNameResposta)){
+                                        sendMessage(getMensagemSolta(update.getMessage(), "Espertinho 😏 não consegui", true));
+                                    } else {
+                                        if (usuario.toUpperCase().matches("SAMUELKLEIN|EVERTON06|ARQUIMAGO|RICTM|MAGNUNLENO|JFCOSTTA")) {
+                                            Long valor = buscaValorXP(mensagem);
+                                            Usuario usuarioXP = controleXP.add(idResposta, userNameResposta, valor, null);
+                                            sendMessage(getMensagemSolta(update.getMessage(), usuarioXP.getNome() + ": tu tem +" + usuarioXP.getValorXp() + " XP", true));
+                                        } else {
+                                            Random r = new Random();
+                                            int random = r.nextInt(4);
+                                            controleXP.add(id, usuario, -random, null);
+                                            sendMessage(getMensagemSolta(update.getMessage(), "Tu perde " + random +" XP", true));
+                                        }
+                                    }
+                                } else {
+                                    sendMessage(getMensagemSolta(update.getMessage(), "Para utilizar o sistema de XP cadastrei o @ do usuario", true));
+                                }
+                            }
+                            if ((Fuzzy.similarity(mensagem, "QUAL O MEU XP?") < 0.6) || (Fuzzy.similarity(mensagem, "MEU XP E QUAL?") < 0.6)) {
+                                Integer id = update.message?.from?.id;
+                                Usuario usuarioXP = controleXP.getUsuario(id);
+
+                                if(usuarioXP != null) {
+                                    sendMessage(getMensagemSolta(update.getMessage(), "Tu tem " + usuarioXP.getValorXp() + " XP", true));
+                                } else {
+                                    if(userNameResposta) {
+                                        controleXP.add(id, usuario, 1, null);
+                                        sendMessage(getMensagemSolta(update.getMessage(), "Tu ganhou +1 XP", true));
+                                    } else {
+                                        sendMessage(getMensagemSolta(update.getMessage(), "Para utilizar o sistema de XP cadastrei o @ do usuario", true));
+                                    }
+
+                                }
                             }
                         } else if (mensagem.contains("#QUEROUMJOGODASTEAM")) {
                             Sorteio sorteio = Sorteio.getSorteio();
+                            Integer id = update.message?.from?.id;
                             String userName = update.message?.from?.userName;
                             
                             if (userName) {
-                                sorteio.addPessoa(userName);
+                                sorteio.addPessoa(id, userName);
                                 sendMessage(getMensagemSolta(update.getMessage(), "Incluido no sorteio @" + userName + "\n\n\n\n" + sorteio.getLista(), true));
                             } else {
                                 sendMessage(getMensagemSolta(update.getMessage(), "Para participar do sorteio precisa cadastrar o @ do usuario", true));
@@ -129,6 +177,26 @@ public class HeimdallBot extends TelegramLongPollingBot {
 //
 //
 //    }
+
+    Long buscaValorXP(String mensagem) {
+        mensagem = mensagem.toUpperCase();
+        Long valor = 0l;
+        String[] split = mensagem.split(" ");
+        for (int i = 0; i < split.length; i++) {
+            if (split[i].equals("XP")) {
+                try{
+                    valor = Long.parseLong(split[i - 1]);
+                } catch (Exception e) {}
+            } else if (split[i].contains("XP")) {
+                try{
+                    valor = Long.parseLong(split[i].replaceAll("XP", ""));
+                } catch (Exception e) {}
+            }
+        }
+
+        return valor;
+    }
+
 
     ForwardMessage criarEncaminhar(Update update) {
         ForwardMessage forwardMessage = new ForwardMessage();
@@ -201,7 +269,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(message.getChatId().toString());
-        sendMessage.enableMarkdown(true);
+        sendMessage.enableMarkdown(false);
         if (responde) {
             sendMessage.setReplyToMessageId(message.getMessageId());
         }
