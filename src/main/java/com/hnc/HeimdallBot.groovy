@@ -344,7 +344,7 @@ public class HeimdallBot extends TelegramLongPollingBot {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            sendMessage.setText("Bem vindo, " + query + "\nSinto muito em avisar que sua visão do HnC certamente vai mudar\n\n\nSe inscreva no nosso canal: https://www.youtube.com/channel/UCwOEGtz0PrNvKW72horfIKw");
+            sendMessage.setText("Bem vindo, " + query + "\nSinto muito em avisar que sua visão do HnC certamente vai mudar\n\n\nSe inscreva no nosso canal: https://www.youtube.com/hackncast");
         } else {
             User leftChatParticipant = message.getLeftChatMember();
             String query = leftChatParticipant.getUserName();
