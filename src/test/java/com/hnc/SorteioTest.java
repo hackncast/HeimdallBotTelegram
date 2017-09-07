@@ -19,14 +19,14 @@ public class SorteioTest {
 
     @Test
     public void getMensagemRandom() {
-        sorteio.addPessoa(1, "MANUEL");
-        sorteio.addPessoa(2, "JOAO");
-        sorteio.addPessoa(3, "CARLO");
-        sorteio.addPessoa(4, "MATEU");
-        sorteio.addPessoa(5, "MARCO");
-
-        System.out.println(sorteio.getMensagemRandom());
-        System.out.println(sorteio.getLista());
+//        sorteio.addPessoa(1, "MANUEL");
+//        sorteio.addPessoa(2, "JOAO");
+//        sorteio.addPessoa(3, "CARLO");
+//        sorteio.addPessoa(4, "MATEU");
+//        sorteio.addPessoa(5, "MARCO");
+//
+//        System.out.println(sorteio.getMensagemRandom());
+//        System.out.println(sorteio.getLista());
     }
 
 }
