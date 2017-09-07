@@ -86,39 +86,39 @@ public class HeimdallBot extends TelegramLongPollingBot {
                                 Integer idResposta = update.message?.replyToMessage?.from?.id;
                                 if (userNameResposta) {
                                     if(usuario.equals(userNameResposta)){
-                                        sendMessage(getMensagemSolta(update.getMessage(), "Espertinho 😏 não consegui", true));
+//                                        sendMessage(getMensagemSolta(update.getMessage(), "Espertinho 😏 não consegui", true));
                                     } else {
                                         if (usuario.toUpperCase().matches("SAMUELKLEIN|EVERTON06|ARQUIMAGO|RICTM|MAGNUNLENO|JFCOSTTA")) {
                                             Long valor = buscaValorXP(mensagem);
                                             Usuario usuarioXP = controleXP.add(idResposta, userNameResposta, valor, null);
-                                            sendMessage(getMensagemSolta(update.getMessage(), usuarioXP.getNome() + ": tu tem +" + usuarioXP.getValorXp() + " XP", true));
+//                                            sendMessage(getMensagemSolta(update.getMessage(), usuarioXP.getNome() + ": tu tem +" + usuarioXP.getValorXp() + " XP", true));
                                         } else {
                                             Random r = new Random();
                                             int random = r.nextInt(4);
                                             controleXP.add(id, usuario, -random, null);
-                                            sendMessage(getMensagemSolta(update.getMessage(), "Tu perde " + random +" XP", true));
+//                                            sendMessage(getMensagemSolta(update.getMessage(), "Tu perde " + random +" XP", true));
                                         }
                                     }
                                 } else {
-                                    sendMessage(getMensagemSolta(update.getMessage(), "Para utilizar o sistema de XP cadastrei o @ do usuario", true));
+//                                    sendMessage(getMensagemSolta(update.getMessage(), "Para utilizar o sistema de XP cadastrei o @ do usuario", true));
                                 }
                             }
-                            if ((Fuzzy.similarity(mensagem, "QUAL O MEU XP?") < 0.6) || (Fuzzy.similarity(mensagem, "MEU XP E QUAL?") < 0.6)) {
-                                Integer id = update.message?.from?.id;
-                                Usuario usuarioXP = controleXP.getUsuario(id);
-
-                                if(usuarioXP != null) {
-                                    sendMessage(getMensagemSolta(update.getMessage(), "Tu tem " + usuarioXP.getValorXp() + " XP", true));
-                                } else {
-                                    if(userNameResposta) {
-                                        controleXP.add(id, usuario, 1, null);
-                                        sendMessage(getMensagemSolta(update.getMessage(), "Tu ganhou +1 XP", true));
-                                    } else {
-                                        sendMessage(getMensagemSolta(update.getMessage(), "Para utilizar o sistema de XP cadastrei o @ do usuario", true));
-                                    }
-
-                                }
-                            }
+//                            if ((Fuzzy.similarity(mensagem, "QUAL O MEU XP?") < 0.6) || (Fuzzy.similarity(mensagem, "MEU XP E QUAL?") < 0.6)) {
+//                                Integer id = update.message?.from?.id;
+//                                Usuario usuarioXP = controleXP.getUsuario(id);
+//
+//                                if(usuarioXP != null) {
+//                                    sendMessage(getMensagemSolta(update.getMessage(), "Tu tem " + usuarioXP.getValorXp() + " XP", true));
+//                                } else {
+//                                    if(userNameResposta) {
+//                                        controleXP.add(id, usuario, 1, null);
+//                                        sendMessage(getMensagemSolta(update.getMessage(), "Tu ganhou +1 XP", true));
+//                                    } else {
+//                                        sendMessage(getMensagemSolta(update.getMessage(), "Para utilizar o sistema de XP cadastrei o @ do usuario", true));
+//                                    }
+//
+//                                }
+//                            }
                         } else if (mensagem.contains("#QUEROUMJOGODASTEAM")) {
                             Sorteio sorteio = Sorteio.getSorteio();
                             Integer id = update.message?.from?.id;

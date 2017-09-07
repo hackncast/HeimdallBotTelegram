@@ -1,8 +1,6 @@
 package com.hnc;
 
-import com.hnc.bd.*;
-
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by samuel on 10/01/17.
@@ -11,31 +9,31 @@ public class Sorteio {
 
     private static Sorteio sorteio;
 
-    private ControleXP controleXP;
+    private ArrayList<String> listaDePessoas;
 
     private Sorteio() {
-        controleXP = ControleXP.getInstance();
+        listaDePessoas = new ArrayList<>();
+        
     }
 
     public String getMensagemRandom() {
-        List<Usuario> usuarios = controleXP.lista("where sorteio = 1");
-        int sorte = (int) (Math.random() * (usuarios.size() - 1));
-        return usuarios.get(sorte).getNome();
+        int sorte = (int) (Math.random() * (listaDePessoas.size() - 1));
+        return listaDePessoas.get(sorte);
     }
 
-    public void addPessoa(Integer id, String nome) {
-        controleXP.add(id, nome, 0l, 1);
+    public void addPessoa(String nome) {
+        if (!listaDePessoas.contains(nome)) {
+            listaDePessoas.add(nome);
+        }
     }
 
     public String getLista() {
         StringBuffer sb = new StringBuffer();
         sb.append("Pessoas que estão no sorteio:");
-        List<Usuario> usuarios = controleXP.lista("where sorteio = 1");
-
-        for (Usuario usuario : usuarios) {
+        for (String nome : listaDePessoas) {
             sb.append("\n");
             sb.append("@");
-            sb.append(usuario.getNome());
+            sb.append(nome);
         }
         return sb.toString();
     }
@@ -46,5 +44,4 @@ public class Sorteio {
         }
         return sorteio;
     }
-
 }
