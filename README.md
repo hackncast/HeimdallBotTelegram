@@ -15,6 +15,7 @@ public class Configuracao {
 
 ## Criar o jar
 `mvn clean package`
+
 Pasta target/HeimdallBot-DeusSaiyajin.jar
 
 # Executar
