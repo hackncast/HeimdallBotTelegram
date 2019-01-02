@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.hnc</groupId>
 	<artifactId>HeimdallBot</artifactId>
-	<version>SuperSaiyajin2.5</version>
+	<version>DeusSaiyajin</version>
 	<repositories>
 		<repository>
 			<id>central</id>
